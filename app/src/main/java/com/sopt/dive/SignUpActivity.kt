@@ -42,7 +42,19 @@ class SignUpActivity : ComponentActivity() {
         setContent {
             DiveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignUpScreen(modifier = Modifier.padding(innerPadding))
+                    SignUpScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onSignUpComplete = { id, pw, name, nickname, mbti ->
+                            val resultIntent = Intent().apply {
+                                putExtra("id", id)
+                                putExtra("password", pw)
+                                putExtra("name", name)
+                                putExtra("nickname", nickname)
+                                putExtra("mbti", mbti)
+                            }
+                            setResult(RESULT_OK, resultIntent)
+                            finish()
+                        })
                 }
             }
         }
@@ -54,7 +66,10 @@ fun showToast(context: Context, message: String) {
 }
 
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier) {
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    onSignUpComplete: (String, String, String, String, String) -> Unit
+) {
     var id by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -205,10 +220,7 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
             onClick = {
                 if (validateInputs()) {
                     showToast(context, "회원가입에 성공했습니다!")
-                    val intent = Intent(context, SignInActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    context.startActivity(intent)
+                    onSignUpComplete(id, password, name, nickname, mbti)
                 }
             },
             modifier = Modifier
@@ -229,5 +241,5 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    SignUpScreen()
+    SignUpScreen(onSignUpComplete = { _, _, _, _, _ -> })
 }

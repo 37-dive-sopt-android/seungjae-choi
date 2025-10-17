@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,26 @@ import androidx.compose.ui.unit.sp
 import com.sopt.dive.ui.theme.DiveTheme
 
 class SignInActivity : ComponentActivity() {
+    private var registeredId: String by mutableStateOf("")
+    private var registeredPassword: String by mutableStateOf("")
+    private var registeredName: String by mutableStateOf("")
+    private var registeredNickname: String by mutableStateOf("")
+    private var registeredMbti: String by mutableStateOf("")
+
+    private val signUpLancher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.let { intent ->
+                registeredId = intent.getStringExtra("id") ?: ""
+                registeredPassword = intent.getStringExtra("password") ?: ""
+                registeredName = intent.getStringExtra("name") ?: ""
+                registeredNickname = intent.getStringExtra("nickname") ?: ""
+                registeredMbti = intent.getStringExtra("mbti") ?: ""
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
