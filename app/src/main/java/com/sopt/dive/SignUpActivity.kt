@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -26,10 +28,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +82,12 @@ fun SignUpScreen(
     var name by remember { mutableStateOf("") }
     var nickname by remember { mutableStateOf("") }
     var mbti by remember { mutableStateOf("") }
+
+    val focusRequesterPassword = remember { FocusRequester() }
+    val focusRequesterName = remember { FocusRequester() }
+    val focusRequesterNickname = remember { FocusRequester() }
+    val focusRequesterMbti = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     val context = LocalContext.current
 
@@ -132,7 +145,14 @@ fun SignUpScreen(
                 .fillMaxWidth(),
             label = { Text("아이디를 입력해주세요.") },
             placeholder = { Text("아이디를 입력해주세요.") },
-            maxLines = 1
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusRequesterPassword.requestFocus() }
+            )
         )
 
         Text(
@@ -148,10 +168,18 @@ fun SignUpScreen(
             value = password,
             onValueChange = { password = it },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .focusRequester(focusRequesterPassword),
             label = { Text("비밀번호를 입력해주세요.") },
             placeholder = { Text("비밀번호를 입력해주세요.") },
-            maxLines = 1
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusRequesterName.requestFocus() }
+            )
         )
 
         Text(
@@ -167,10 +195,18 @@ fun SignUpScreen(
             value = name,
             onValueChange = { name = it },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .focusRequester(focusRequesterName),
             label = { Text("이름을 입력해주세요.") },
             placeholder = { Text("이름을 입력해주세요.") },
-            maxLines = 1
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusRequesterNickname.requestFocus() }
+            )
         )
 
         Text(
@@ -186,10 +222,18 @@ fun SignUpScreen(
             value = nickname,
             onValueChange = { nickname = it },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .focusRequester(focusRequesterNickname),
             label = { Text("닉네임을 입력해주세요.") },
             placeholder = { Text("닉네임을 입력해주세요.") },
-            maxLines = 1
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusRequesterMbti.requestFocus() }
+            )
         )
 
         Text(
@@ -205,10 +249,18 @@ fun SignUpScreen(
             value = mbti,
             onValueChange = { mbti = it },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .focusRequester(focusRequesterMbti),
             label = { Text("MBTI를 입력해주세요.") },
             placeholder = { Text("MBTI를 입력해주세요.") },
-            maxLines = 1
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Ascii,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
 
         Spacer(

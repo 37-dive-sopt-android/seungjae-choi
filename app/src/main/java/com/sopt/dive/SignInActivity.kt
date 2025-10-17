@@ -1,7 +1,9 @@
 package com.sopt.dive
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,10 +30,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -94,6 +101,10 @@ class SignInActivity : ComponentActivity() {
         }
     }
 
+    fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
     @Composable
     fun SignInScreen(
         modifier: Modifier = Modifier,
@@ -105,8 +116,11 @@ class SignInActivity : ComponentActivity() {
         onLaunchSignUp: () -> Unit,
         onSignInSuccess: (id: String, pw: String, name: String, nickname: String, mbti: String) -> Unit
     ) {
-        var id by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+        var id by remember(registeredId) { mutableStateOf(registeredId) }
+        var password by remember(registeredPassword) { mutableStateOf(registeredPassword) }
+
+        val focusRequesterPassword = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
 
         val context = LocalContext.current
 
@@ -140,7 +154,14 @@ class SignInActivity : ComponentActivity() {
                     .fillMaxWidth(),
                 label = { Text("아이디를 입력해주세요.") },
                 placeholder = { Text("아이디를 입력해주세요.") },
-                maxLines = 1
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesterPassword.requestFocus() }
+                )
             )
 
             Text(
@@ -155,11 +176,18 @@ class SignInActivity : ComponentActivity() {
                 value = password,
                 onValueChange = { password = it },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesterPassword),
                 label = { Text("비밀번호를 입력해주세요.") },
                 placeholder = { Text("비밀번호를 입력해주세요.") },
                 maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
+                ),
                 visualTransformation = PasswordVisualTransformation()
             )
 
