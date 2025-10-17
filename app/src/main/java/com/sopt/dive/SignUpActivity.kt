@@ -1,7 +1,9 @@
 package com.sopt.dive
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -47,6 +49,10 @@ class SignUpActivity : ComponentActivity() {
     }
 }
 
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
 @Composable
 fun SignUpScreen(modifier: Modifier = Modifier) {
     var id by remember { mutableStateOf("") }
@@ -56,6 +62,29 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
     var mbti by remember { mutableStateOf("") }
 
     val context = LocalContext.current
+
+    fun validateInputs(): Boolean {
+        val errorMessage = when {
+            id.isBlank() -> "아이디를 입력해주세요."
+            password.isBlank() -> "비밀번호를 입력해주세요."
+            name.isBlank() -> "이름을 입력해주세요."
+            nickname.isBlank() -> "닉네임을 입력해주세요."
+            mbti.isBlank() -> "MBTI를 입력해주세요."
+
+            id.length !in 6..10 -> "ID는 6~10자 이내로 입력해주세요."
+
+            password.length !in 8..12 -> "비밀번호는 8~12자 이내로 입력해주세요."
+
+            else -> null
+        }
+
+        return if (errorMessage != null) {
+            showToast(context, errorMessage)
+            false
+        } else {
+            true
+        }
+    }
 
     Column(
         modifier = modifier
@@ -174,10 +203,13 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                val intent = Intent(context, SignInActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                if (validateInputs()) {
+                    showToast(context, "회원가입에 성공했습니다!")
+                    val intent = Intent(context, SignInActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(intent)
                 }
-                context.startActivity(intent)
             },
             modifier = Modifier
                 .fillMaxWidth()
