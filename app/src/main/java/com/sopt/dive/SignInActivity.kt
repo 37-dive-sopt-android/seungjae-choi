@@ -1,25 +1,25 @@
 package com.sopt.dive
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -99,10 +99,6 @@ class SignInActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    fun showToast(context: Context, message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     @Composable
@@ -202,34 +198,46 @@ class SignInActivity : ComponentActivity() {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-                    .clickable(onClick = onLaunchSignUp)
+                    .clickable(
+                        onClick = onLaunchSignUp,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
             )
 
-            Button(
-                onClick = {
-                    if (id.isEmpty() || password.isEmpty()) {
-                        showToast(context, "아이디와 비밀번호를 입력해주세요.")
-                        return@Button
-                    }
-
-                    if (id == registeredId && password == registeredPassword) {
-                        showToast(context, "로그인에 성공했습니다!")
-                        onSignInSuccess(
-                            id,
-                            password,
-                            registeredName,
-                            registeredNickname,
-                            registeredMbti
-                        )
-                    } else {
-                        showToast(context, "아이디 또는 비밀번호가 틀렸습니다.")
-                    }
-                },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Magenta),
-                shape = RoundedCornerShape(4.dp)
+                    .padding(bottom = 24.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color.Magenta,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .clickable(
+                        onClick = {
+                            if (id.isEmpty() || password.isEmpty()) {
+                                showToast(context, "아이디와 비밀번호를 입력해주세요.")
+                                return@clickable
+                            }
+
+                            if (id == registeredId && password == registeredPassword) {
+                                showToast(context, "로그인에 성공했습니다!")
+                                onSignInSuccess(
+                                    id,
+                                    password,
+                                    registeredName,
+                                    registeredNickname,
+                                    registeredMbti
+                                )
+                            } else {
+                                showToast(context, "아이디 또는 비밀번호가 틀렸습니다.")
+                            }
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "Welcome To SOPT",
@@ -238,7 +246,6 @@ class SignInActivity : ComponentActivity() {
                 )
             }
         }
-
     }
 
     @Preview(showBackground = true)

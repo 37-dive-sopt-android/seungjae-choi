@@ -7,17 +7,20 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -268,18 +271,26 @@ fun SignUpScreen(
                 .weight(1f)
         )
 
-        Button(
-            onClick = {
-                if (validateInputs()) {
-                    showToast(context, "회원가입에 성공했습니다!")
-                    onSignUpComplete(id, password, name, nickname, mbti)
-                }
-            },
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Magenta),
-            shape = RoundedCornerShape(4.dp)
+                .padding(bottom = 24.dp)
+                .height(40.dp)
+                .background(
+                    color = Color.Magenta,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickable(
+                    onClick = {
+                        if (validateInputs()) {
+                            showToast(context, "회원가입에 성공했습니다!")
+                            onSignUpComplete(id, password, name, nickname, mbti)
+                        }
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "회원가입 하기",
