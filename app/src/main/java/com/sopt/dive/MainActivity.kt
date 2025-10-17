@@ -33,10 +33,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val userId = intent.getStringExtra("id") ?: ""
+        val userPassword = intent.getStringExtra("password") ?: ""
+        val userName = intent.getStringExtra("name") ?: ""
+        val userNickname = intent.getStringExtra("nickname") ?: ""
+        val userMbti = intent.getStringExtra("mbti") ?: ""
+
         setContent {
             DiveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(modifier = Modifier.padding(innerPadding))
+                    MainScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        userId = userId,
+                        userPassword = userPassword,
+                        userName = userName,
+                        userNickname = userNickname,
+                        userMbti = userMbti,
+                    )
                 }
             }
         }
@@ -44,13 +58,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-    val idValue = "idValue"
-    val pwValue = "pwValue"
-    val nameValue = "nameValue"
-    val nicknameValue = "nicknameValue"
-    val mbtiValue = "mbtiValue"
-
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    userId: String = "id",
+    userPassword: String = "pw",
+    userName: String = "name",
+    userNickname: String = "nickname",
+    userMbti: String = "mbti"
+) {
     Column(
         modifier = modifier
             .padding(horizontal = 20.dp),
@@ -72,14 +87,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = nameValue,
+                text = userName,
                 modifier = Modifier
                     .padding(start = 8.dp)
             )
         }
 
         Text(
-            text = "안녕하세요. 안드로이드 YB ${nameValue}입니다.",
+            text = "안녕하세요. 안드로이드 YB ${userName}입니다.",
             modifier = Modifier
                 .padding(top = 12.dp)
         )
@@ -95,7 +110,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = idValue,
+                text = userId,
                 fontSize = 18.sp,
                 color = Color.Gray
             )
@@ -112,7 +127,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = pwValue,
+                text = userPassword,
                 fontSize = 18.sp,
                 color = Color.Gray
             )
@@ -128,7 +143,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = nicknameValue,
+                text = userNickname,
                 fontSize = 18.sp,
                 color = Color.Gray
             )
@@ -145,7 +160,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             )
 
             Text(
-                text = mbtiValue,
+                text = userMbti,
                 fontSize = 18.sp,
                 color = Color.Gray
             )

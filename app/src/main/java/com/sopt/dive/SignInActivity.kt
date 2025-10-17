@@ -66,14 +66,45 @@ class SignInActivity : ComponentActivity() {
         setContent {
             DiveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignInScreen(modifier = Modifier.padding(innerPadding))
+                    SignInScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        registeredId = registeredId,
+                        registeredPassword = registeredPassword,
+                        registeredName = registeredName,
+                        registeredNickname = registeredNickname,
+                        registeredMbti = registeredMbti,
+                        onLaunchSignUp = {
+                            val intent = Intent(this@SignInActivity, SignUpActivity::class.java)
+                            signUpLancher.launch(intent)
+                        },
+                        onSignInSuccess = { id, pw, name, nickname, mbti ->
+                            val intent =
+                                Intent(this@SignInActivity, MainActivity::class.java).apply {
+                                    putExtra("id", id)
+                                    putExtra("password", pw)
+                                    putExtra("name", name)
+                                    putExtra("nickname", nickname)
+                                    putExtra("mbti", mbti)
+                                }
+                            startActivity(intent)
+                        }
+                    )
                 }
             }
         }
     }
 
     @Composable
-    fun SignInScreen(modifier: Modifier = Modifier) {
+    fun SignInScreen(
+        modifier: Modifier = Modifier,
+        registeredId: String = "",
+        registeredPassword: String = "",
+        registeredName: String = "",
+        registeredNickname: String = "",
+        registeredMbti: String = "",
+        onLaunchSignUp: () -> Unit,
+        onSignInSuccess: (id: String, pw: String, name: String, nickname: String, mbti: String) -> Unit
+    ) {
         var id by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
 
@@ -143,18 +174,28 @@ class SignInActivity : ComponentActivity() {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-                    .clickable(onClick = {
-                        val intent = Intent(context, SignUpActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        }
-                        context.startActivity(intent)
-                    })
+                    .clickable(onClick = onLaunchSignUp)
             )
 
             Button(
                 onClick = {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
+                    if (id.isEmpty() || password.isEmpty()) {
+                        showToast(context, "아이디와 비밀번호를 입력해주세요.")
+                        return@Button
+                    }
+
+                    if (id == registeredId && password == registeredPassword) {
+                        showToast(context, "로그인에 성공했습니다!")
+                        onSignInSuccess(
+                            id,
+                            password,
+                            registeredName,
+                            registeredNickname,
+                            registeredMbti
+                        )
+                    } else {
+                        showToast(context, "아이디 또는 비밀번호가 틀렸습니다.")
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,6 +216,9 @@ class SignInActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun SignInScreenPreview() {
-        SignInScreen()
+        SignInScreen(
+            onLaunchSignUp = {},
+            onSignInSuccess = { _, _, _, _, _ -> }
+        )
     }
 }
