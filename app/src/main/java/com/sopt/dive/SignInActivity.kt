@@ -1,6 +1,8 @@
 package com.sopt.dive
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -54,6 +56,8 @@ class SignInActivity : ComponentActivity() {
     private var registeredNickname: String by mutableStateOf("")
     private var registeredMbti: String by mutableStateOf("")
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     private val signUpLancher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -64,6 +68,14 @@ class SignInActivity : ComponentActivity() {
                 registeredName = intent.getStringExtra("name") ?: ""
                 registeredNickname = intent.getStringExtra("nickname") ?: ""
                 registeredMbti = intent.getStringExtra("mbti") ?: ""
+
+                saveUserData(
+                    registeredId,
+                    registeredPassword,
+                    registeredName,
+                    registeredNickname,
+                    registeredMbti
+                )
             }
         }
     }
@@ -71,6 +83,11 @@ class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+        checkAutoLogin()
+
         setContent {
             DiveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -99,6 +116,56 @@ class SignInActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    private fun checkAutoLogin() {
+        val autoLogin = sharedPreferences.getBoolean("auto_login", false)
+
+        if (autoLogin) {
+            registeredId = sharedPreferences.getString("user_id", "") ?: ""
+            registeredPassword = sharedPreferences.getString("user_password", "") ?: ""
+            registeredName = sharedPreferences.getString("user_name", "") ?: ""
+            registeredNickname = sharedPreferences.getString("user_nickname", "") ?: ""
+            registeredMbti = sharedPreferences.getString("user_mbti", "") ?: ""
+
+            if (registeredId.isNotEmpty() && registeredPassword.isNotEmpty()) {
+                val intent = Intent(this@SignInActivity, MainActivity::class.java).apply {
+                    putExtra("id", registeredId)
+                    putExtra("password", registeredPassword)
+                    putExtra("name", registeredName)
+                    putExtra("nickname", registeredNickname)
+                    putExtra("mbti", registeredMbti)
+                }
+                startActivity(intent)
+                finish()
+            }
+        } else {
+            registeredId = sharedPreferences.getString("user_id", "") ?: ""
+            registeredPassword = sharedPreferences.getString("user_password", "") ?: ""
+            registeredName = sharedPreferences.getString("user_name", "") ?: ""
+            registeredNickname = sharedPreferences.getString("user_nickname", "") ?: ""
+            registeredMbti = sharedPreferences.getString("user_mbti", "") ?: ""
+        }
+    }
+
+    private fun saveUserData(
+        id: String,
+        password: String,
+        name: String,
+        nickname: String,
+        mbti: String
+    ) {
+        sharedPreferences.edit().apply {
+            putString("user_id", id)
+            putString("user_password", password)
+            putString("user_name", name)
+            putString("user_nickname", nickname)
+            putString("user_mbti", mbti)
+
+            putBoolean("auto_login", true)
+
+            apply()
         }
     }
 
