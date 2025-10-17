@@ -17,10 +17,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -117,186 +120,194 @@ fun SignUpScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = modifier
-            .padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .fillMaxSize()
+            .imePadding()
     ) {
-        Text(
-            text = "Sign Up",
-            fontSize = 40.sp,
-            fontStyle = FontStyle.Italic,
-            fontWeight = FontWeight.Bold,
+        Column(
             modifier = Modifier
-                .padding(top = 40.dp)
-        )
-
-        Text(
-            text = "ID",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 40.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = id,
-            onValueChange = { id = it },
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = { Text("아이디를 입력해주세요.") },
-            placeholder = { Text("아이디를 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusRequesterPassword.requestFocus() }
-            )
-        )
-
-        Text(
-            text = "PW",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 24.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesterPassword),
-            label = { Text("비밀번호를 입력해주세요.") },
-            placeholder = { Text("비밀번호를 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusRequesterName.requestFocus() }
-            )
-        )
-
-        Text(
-            text = "NAME",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 24.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesterName),
-            label = { Text("이름을 입력해주세요.") },
-            placeholder = { Text("이름을 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusRequesterNickname.requestFocus() }
-            )
-        )
-
-        Text(
-            text = "NICKNAME",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 24.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = nickname,
-            onValueChange = { nickname = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesterNickname),
-            label = { Text("닉네임을 입력해주세요.") },
-            placeholder = { Text("닉네임을 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusRequesterMbti.requestFocus() }
-            )
-        )
-
-        Text(
-            text = "MBTI",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 24.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = mbti,
-            onValueChange = { mbti = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesterMbti),
-            label = { Text("MBTI를 입력해주세요.") },
-            placeholder = { Text("MBTI를 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Ascii,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            )
-        )
-
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-                .height(40.dp)
-                .background(
-                    color = Color.Magenta,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .clickable(
-                    onClick = {
-                        if (validateInputs()) {
-                            showToast(context, "회원가입에 성공했습니다!")
-                            onSignUpComplete(id, password, name, nickname, mbti)
-                        }
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = "회원가입 하기",
+                text = "Sign Up",
+                fontSize = 40.sp,
+                fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                modifier = Modifier
+                    .padding(top = 40.dp)
             )
+
+            Text(
+                text = "ID",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(alignment = Alignment.Start)
+                    .padding(top = 40.dp, bottom = 4.dp)
+            )
+
+            TextField(
+                value = id,
+                onValueChange = { id = it },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = { Text("아이디를 입력해주세요.") },
+                placeholder = { Text("아이디를 입력해주세요.") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesterPassword.requestFocus() }
+                )
+            )
+
+            Text(
+                text = "PW",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(alignment = Alignment.Start)
+                    .padding(top = 24.dp, bottom = 4.dp)
+            )
+
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesterPassword),
+                label = { Text("비밀번호를 입력해주세요.") },
+                placeholder = { Text("비밀번호를 입력해주세요.") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesterName.requestFocus() }
+                )
+            )
+
+            Text(
+                text = "NAME",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(alignment = Alignment.Start)
+                    .padding(top = 24.dp, bottom = 4.dp)
+            )
+
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesterName),
+                label = { Text("이름을 입력해주세요.") },
+                placeholder = { Text("이름을 입력해주세요.") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesterNickname.requestFocus() }
+                )
+            )
+
+            Text(
+                text = "NICKNAME",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(alignment = Alignment.Start)
+                    .padding(top = 24.dp, bottom = 4.dp)
+            )
+
+            TextField(
+                value = nickname,
+                onValueChange = { nickname = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesterNickname),
+                label = { Text("닉네임을 입력해주세요.") },
+                placeholder = { Text("닉네임을 입력해주세요.") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesterMbti.requestFocus() }
+                )
+            )
+
+            Text(
+                text = "MBTI",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(alignment = Alignment.Start)
+                    .padding(top = 24.dp, bottom = 4.dp)
+            )
+
+            TextField(
+                value = mbti,
+                onValueChange = { mbti = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesterMbti),
+                label = { Text("MBTI를 입력해주세요.") },
+                placeholder = { Text("MBTI를 입력해주세요.") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Ascii,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
+                )
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .weight(1f)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 24.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color.Magenta,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .clickable(
+                        onClick = {
+                            if (validateInputs()) {
+                                showToast(context, "회원가입에 성공했습니다!")
+                                onSignUpComplete(id, password, name, nickname, mbti)
+                            }
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "회원가입 하기",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
     }
 }
