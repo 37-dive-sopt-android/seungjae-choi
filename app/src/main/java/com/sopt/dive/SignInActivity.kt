@@ -1,8 +1,6 @@
 package com.sopt.dive
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,7 +45,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.core.data.UserData
+import com.sopt.dive.core.data.UserManager
+import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.extention.showToast
+import com.sopt.dive.core.util.Validator
 
 class SignInActivity : ComponentActivity() {
     private var registeredId: String by mutableStateOf("")
@@ -56,26 +58,26 @@ class SignInActivity : ComponentActivity() {
     private var registeredNickname: String by mutableStateOf("")
     private var registeredMbti: String by mutableStateOf("")
 
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userManager: UserManager
 
-    private val signUpLancher = registerForActivityResult(
+    private val signUpLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             result.data?.let { intent ->
-                registeredId = intent.getStringExtra("id") ?: ""
-                registeredPassword = intent.getStringExtra("password") ?: ""
-                registeredName = intent.getStringExtra("name") ?: ""
-                registeredNickname = intent.getStringExtra("nickname") ?: ""
-                registeredMbti = intent.getStringExtra("mbti") ?: ""
+                val id = intent.getStringExtra(UserManager.SharedPrefKeys.USER_ID) ?: ""
+                val pw = intent.getStringExtra(UserManager.SharedPrefKeys.USER_PASSWORD) ?: ""
+                val name = intent.getStringExtra(UserManager.SharedPrefKeys.USER_NAME) ?: ""
+                val nickname = intent.getStringExtra(UserManager.SharedPrefKeys.USER_NICKNAME) ?: ""
+                val mbti = intent.getStringExtra(UserManager.SharedPrefKeys.USER_MBTI) ?: ""
 
-                saveUserData(
-                    registeredId,
-                    registeredPassword,
-                    registeredName,
-                    registeredNickname,
-                    registeredMbti
-                )
+                registeredId = id
+                registeredPassword = pw
+                registeredName = name
+                registeredNickname = nickname
+                registeredMbti = mbti
+
+                userManager.saveUserData(UserData(id, pw, name, nickname, mbti))
             }
         }
     }
@@ -84,7 +86,7 @@ class SignInActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        userManager = UserManager(this)
 
         checkAutoLogin()
 
@@ -100,7 +102,7 @@ class SignInActivity : ComponentActivity() {
                         registeredMbti = registeredMbti,
                         onLaunchSignUp = {
                             val intent = Intent(this@SignInActivity, SignUpActivity::class.java)
-                            signUpLancher.launch(intent)
+                            signUpLauncher.launch(intent)
                         },
                         onSignInSuccess = { id, pw, name, nickname, mbti ->
                             val intent =
@@ -120,209 +122,182 @@ class SignInActivity : ComponentActivity() {
     }
 
     private fun checkAutoLogin() {
-        val autoLogin = sharedPreferences.getBoolean("auto_login", false)
+        val autoLogin = userManager.isAutoLoginEnabled()
 
-        if (autoLogin) {
-            registeredId = sharedPreferences.getString("user_id", "") ?: ""
-            registeredPassword = sharedPreferences.getString("user_password", "") ?: ""
-            registeredName = sharedPreferences.getString("user_name", "") ?: ""
-            registeredNickname = sharedPreferences.getString("user_nickname", "") ?: ""
-            registeredMbti = sharedPreferences.getString("user_mbti", "") ?: ""
+        val userData = userManager.loadUserData()
 
-            if (registeredId.isNotEmpty() && registeredPassword.isNotEmpty()) {
-                val intent = Intent(this@SignInActivity, MainActivity::class.java).apply {
-                    putExtra("id", registeredId)
-                    putExtra("password", registeredPassword)
-                    putExtra("name", registeredName)
-                    putExtra("nickname", registeredNickname)
-                    putExtra("mbti", registeredMbti)
-                }
-                startActivity(intent)
-                finish()
+        registeredId = userData.id
+        registeredPassword = userData.password
+        registeredName = userData.name
+        registeredNickname = userData.nickname
+        registeredMbti = userData.mbti
+
+        if (autoLogin && registeredId.isNotEmpty() && registeredPassword.isNotEmpty()) {
+            val intent = Intent(this@SignInActivity, MainActivity::class.java).apply {
+                putExtra(UserManager.SharedPrefKeys.USER_ID, registeredId)
+                putExtra(UserManager.SharedPrefKeys.USER_PASSWORD, registeredPassword)
+                putExtra(UserManager.SharedPrefKeys.USER_NAME, registeredName)
+                putExtra(UserManager.SharedPrefKeys.USER_NICKNAME, registeredNickname)
+                putExtra(UserManager.SharedPrefKeys.USER_MBTI, registeredMbti)
             }
-        } else {
-            registeredId = sharedPreferences.getString("user_id", "") ?: ""
-            registeredPassword = sharedPreferences.getString("user_password", "") ?: ""
-            registeredName = sharedPreferences.getString("user_name", "") ?: ""
-            registeredNickname = sharedPreferences.getString("user_nickname", "") ?: ""
-            registeredMbti = sharedPreferences.getString("user_mbti", "") ?: ""
+            startActivity(intent)
+            finish()
         }
     }
+}
 
-    private fun saveUserData(
-        id: String,
-        password: String,
-        name: String,
-        nickname: String,
-        mbti: String
+@Composable
+fun SignInScreen(
+    modifier: Modifier = Modifier,
+    registeredId: String = "",
+    registeredPassword: String = "",
+    registeredName: String = "",
+    registeredNickname: String = "",
+    registeredMbti: String = "",
+    onLaunchSignUp: () -> Unit,
+    onSignInSuccess: (id: String, pw: String, name: String, nickname: String, mbti: String) -> Unit
+) {
+    var id by remember(registeredId) { mutableStateOf(registeredId) }
+    var password by remember(registeredPassword) { mutableStateOf(registeredPassword) }
+
+    val focusRequesterPassword = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier
+            .padding(horizontal = 20.dp)
+            .imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        sharedPreferences.edit().apply {
-            putString("user_id", id)
-            putString("user_password", password)
-            putString("user_name", name)
-            putString("user_nickname", nickname)
-            putString("user_mbti", mbti)
+        Text(
+            text = "Welcome To SOPT",
+            fontSize = 40.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(top = 40.dp)
+        )
 
-            putBoolean("auto_login", true)
+        Text(
+            text = "ID",
+            fontSize = 20.sp,
+            modifier = Modifier
+                .align(alignment = Alignment.Start)
+                .padding(top = 40.dp, bottom = 4.dp)
+        )
 
-            apply()
-        }
-    }
+        TextField(
+            value = id,
+            onValueChange = { id = it },
+            modifier = Modifier
+                .fillMaxWidth(),
+            label = { Text("아이디를 입력해주세요.") },
+            placeholder = { Text("아이디를 입력해주세요.") },
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusRequesterPassword.requestFocus() }
+            )
+        )
 
-    @Composable
-    fun SignInScreen(
-        modifier: Modifier = Modifier,
-        registeredId: String = "",
-        registeredPassword: String = "",
-        registeredName: String = "",
-        registeredNickname: String = "",
-        registeredMbti: String = "",
-        onLaunchSignUp: () -> Unit,
-        onSignInSuccess: (id: String, pw: String, name: String, nickname: String, mbti: String) -> Unit
-    ) {
-        var id by remember(registeredId) { mutableStateOf(registeredId) }
-        var password by remember(registeredPassword) { mutableStateOf(registeredPassword) }
+        Text(
+            text = "PW",
+            fontSize = 20.sp,
+            modifier = Modifier
+                .align(alignment = Alignment.Start)
+                .padding(top = 24.dp, bottom = 4.dp)
+        )
 
-        val focusRequesterPassword = remember { FocusRequester() }
-        val focusManager = LocalFocusManager.current
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequesterPassword),
+            label = { Text("비밀번호를 입력해주세요.") },
+            placeholder = { Text("비밀번호를 입력해주세요.") },
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ),
+            visualTransformation = PasswordVisualTransformation()
+        )
 
-        val context = LocalContext.current
+        Spacer(modifier = Modifier.weight(1f))
 
-        Column(
-            modifier = modifier
-                .padding(horizontal = 20.dp)
-                .imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Text(
+            text = "회원가입 하기",
+            color = Color.LightGray,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clickable(
+                    onClick = onLaunchSignUp,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick = {
+                        val validationError = Validator.validateSignInInputs(id, password)
+
+                        if (validationError != null) {
+                            context.showToast(validationError)
+                            return@clickable
+                        }
+
+                        if (id == registeredId && password == registeredPassword) {
+                            context.showToast("로그인에 성공했습니다!")
+                            onSignInSuccess(
+                                id,
+                                password,
+                                registeredName,
+                                registeredNickname,
+                                registeredMbti
+                            )
+                        } else {
+                            context.showToast("아이디 또는 비밀번호가 틀렸습니다.")
+                        }
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                .padding(bottom = 24.dp)
+                .height(40.dp)
+                .background(
+                    color = Color.Magenta,
+                    shape = RoundedCornerShape(4.dp)
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Welcome To SOPT",
-                fontSize = 40.sp,
-                fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(top = 40.dp)
+                color = Color.White
             )
-
-            Text(
-                text = "ID",
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .align(alignment = Alignment.Start)
-                    .padding(top = 40.dp, bottom = 4.dp)
-            )
-
-            TextField(
-                value = id,
-                onValueChange = { id = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text("아이디를 입력해주세요.") },
-                placeholder = { Text("아이디를 입력해주세요.") },
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = { focusRequesterPassword.requestFocus() }
-                )
-            )
-
-            Text(
-                text = "PW",
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .align(alignment = Alignment.Start)
-                    .padding(top = 24.dp, bottom = 4.dp)
-            )
-
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequesterPassword),
-                label = { Text("비밀번호를 입력해주세요.") },
-                placeholder = { Text("비밀번호를 입력해주세요.") },
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = { focusManager.clearFocus() }
-                ),
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .weight(1f)
-            )
-
-            Text(
-                text = "회원가입 하기",
-                color = Color.LightGray,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .clickable(
-                        onClick = onLaunchSignUp,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-                    .height(40.dp)
-                    .background(
-                        color = Color.Magenta,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .clickable(
-                        onClick = {
-                            if (id.isEmpty() || password.isEmpty()) {
-                                showToast(context, "아이디와 비밀번호를 입력해주세요.")
-                                return@clickable
-                            }
-
-                            if (id == registeredId && password == registeredPassword) {
-                                showToast(context, "로그인에 성공했습니다!")
-                                onSignInSuccess(
-                                    id,
-                                    password,
-                                    registeredName,
-                                    registeredNickname,
-                                    registeredMbti
-                                )
-                            } else {
-                                showToast(context, "아이디 또는 비밀번호가 틀렸습니다.")
-                            }
-                        },
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Welcome To SOPT",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
         }
     }
+}
 
-    @Preview(showBackground = true)
-    @Composable
-    fun SignInScreenPreview() {
-        SignInScreen(
-            onLaunchSignUp = {},
-            onSignInSuccess = { _, _, _, _, _ -> }
-        )
-    }
+@Preview(showBackground = true)
+@Composable
+private fun SignInScreenPreview() {
+    SignInScreen(
+        onLaunchSignUp = {},
+        onSignInSuccess = { _, _, _, _, _ -> }
+    )
 }

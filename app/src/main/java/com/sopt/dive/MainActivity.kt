@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.core.designsystem.theme.DiveTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,11 +60,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    userId: String = "id",
-    userPassword: String = "pw",
-    userName: String = "name",
-    userNickname: String = "nickname",
-    userMbti: String = "mbti"
+    userId: String = "",
+    userPassword: String = "",
+    userName: String = "",
+    userNickname: String = "",
+    userMbti: String = ""
 ) {
     Column(
         modifier = modifier
@@ -170,7 +170,7 @@ fun MainScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
+private fun MainScreenPreview() {
     DiveTheme {
         MainScreen()
     }
