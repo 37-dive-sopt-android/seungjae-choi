@@ -6,8 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,6 +43,7 @@ import com.sopt.dive.core.data.UserManager
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.extention.noRippleClickable
 import com.sopt.dive.core.extention.showToast
 import com.sopt.dive.core.util.Validator
 
@@ -224,11 +223,7 @@ fun SignInScreen(
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
                 .padding(bottom = 8.dp)
-                .clickable(
-                    onClick = onLaunchSignUp,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
+                .noRippleClickable(onClick = onLaunchSignUp)
         )
 
         SoptButton(
