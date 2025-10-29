@@ -6,19 +6,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Scaffold
@@ -46,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sopt.dive.core.data.UserData
 import com.sopt.dive.core.data.UserManager
+import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.showToast
@@ -234,48 +231,33 @@ fun SignInScreen(
                 )
         )
 
-        Box(
+        SoptButton(
+            label = "Welcome To SOPT",
+            onClick = {
+                val validationError = Validator.validateSignInInputs(id, password)
+
+                if (validationError != null) {
+                    context.showToast(validationError)
+                    return@SoptButton
+                }
+
+                if (id == registeredId && password == registeredPassword) {
+                    context.showToast("로그인에 성공했습니다!")
+                    onSignInSuccess(
+                        id,
+                        password,
+                        registeredName,
+                        registeredNickname,
+                        registeredMbti
+                    )
+                } else {
+                    context.showToast("아이디 또는 비밀번호가 틀렸습니다.")
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(
-                    onClick = {
-                        val validationError = Validator.validateSignInInputs(id, password)
-
-                        if (validationError != null) {
-                            context.showToast(validationError)
-                            return@clickable
-                        }
-
-                        if (id == registeredId && password == registeredPassword) {
-                            context.showToast("로그인에 성공했습니다!")
-                            onSignInSuccess(
-                                id,
-                                password,
-                                registeredName,
-                                registeredNickname,
-                                registeredMbti
-                            )
-                        } else {
-                            context.showToast("아이디 또는 비밀번호가 틀렸습니다.")
-                        }
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
                 .padding(bottom = 24.dp)
-                .height(40.dp)
-                .background(
-                    color = Color.Magenta,
-                    shape = RoundedCornerShape(4.dp)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Welcome To SOPT",
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        }
+        )
     }
 }
 
