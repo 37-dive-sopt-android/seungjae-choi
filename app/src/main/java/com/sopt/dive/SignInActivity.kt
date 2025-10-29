@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sopt.dive.core.data.UserData
 import com.sopt.dive.core.data.UserManager
+import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.showToast
 import com.sopt.dive.core.util.Validator
@@ -167,10 +167,11 @@ fun SignInScreen(
 
     Column(
         modifier = modifier
+            .fillMaxSize()
             .padding(horizontal = 20.dp)
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Welcome To SOPT",
@@ -181,57 +182,42 @@ fun SignInScreen(
                 .padding(top = 40.dp)
         )
 
-        Text(
-            text = "ID",
-            fontSize = 20.sp,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 40.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = id,
-            onValueChange = { id = it },
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = { Text("아이디를 입력해주세요.") },
-            placeholder = { Text("아이디를 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusRequesterPassword.requestFocus() }
+        Column(
+            modifier = Modifier.padding(top = 40.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            SoptFormField(
+                label = "ID",
+                value = id,
+                onValueChange = { id = it },
+                placeholder = "아이디를 입력해주세요.",
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesterPassword.requestFocus() }
+                ),
             )
-        )
 
-        Text(
-            text = "PW",
-            fontSize = 20.sp,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(top = 24.dp, bottom = 4.dp)
-        )
-
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesterPassword),
-            label = { Text("비밀번호를 입력해주세요.") },
-            placeholder = { Text("비밀번호를 입력해주세요.") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            ),
-            visualTransformation = PasswordVisualTransformation()
-        )
+            SoptFormField(
+                label = "PW",
+                value = password,
+                onValueChange = { password = it },
+                placeholder = "비밀번호를 입력해주세요.",
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
+                ),
+                textFieldModifier = Modifier.focusRequester(focusRequesterPassword),
+                visualTransformation = PasswordVisualTransformation()
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
