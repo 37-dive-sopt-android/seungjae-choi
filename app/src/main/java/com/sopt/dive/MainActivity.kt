@@ -8,10 +8,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,12 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 
 class MainActivity : ComponentActivity() {
@@ -99,70 +95,34 @@ fun MainScreen(
                 .padding(top = 12.dp)
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "ID",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 4.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 40.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            SoptInfoField(
+                label = "ID",
+                value = userId,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = userId,
-                fontSize = 18.sp,
-                color = Color.Gray
-            )
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "PW",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(bottom = 4.dp)
+            SoptInfoField(
+                label = "PW",
+                value = userPassword,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = userPassword,
-                fontSize = 18.sp,
-                color = Color.Gray
-            )
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "NICKNAME",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 4.dp)
+            SoptInfoField(
+                label = "NICKNAME",
+                value = userNickname,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = userNickname,
-                fontSize = 18.sp,
-                color = Color.Gray
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "MBTI",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-
-            Text(
-                text = userMbti,
-                fontSize = 18.sp,
-                color = Color.Gray
+            SoptInfoField(
+                label = "MBTI",
+                value = userMbti,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
