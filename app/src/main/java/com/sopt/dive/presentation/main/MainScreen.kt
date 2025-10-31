@@ -20,6 +20,10 @@ import com.sopt.dive.presentation.mypage.navigation.myPageNavGraph
 import com.sopt.dive.presentation.mypage.navigation.navigateToMyPage
 import com.sopt.dive.presentation.search.navigation.navigateToSearch
 import com.sopt.dive.presentation.search.navigation.searchNavGraph
+import com.sopt.dive.presentation.signup.navigateToSignIn
+import com.sopt.dive.presentation.signup.navigation.navigateToSignUp
+import com.sopt.dive.presentation.signup.navigation.signUpNavGraph
+import com.sopt.dive.presentation.signup.signInNavGraph
 
 @Composable
 fun MainScreen(
@@ -34,10 +38,15 @@ fun MainScreen(
         currentDestination?.hasRoute(tab.route::class) == true
     }
 
+    val showBottomBar = MainTab.contains { tab ->
+        currentDestination?.hasRoute(tab.route::class) == true
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             MainBottomBar(
+                visible = showBottomBar,
                 tabs = MainTab.entries.toList(),
                 currentTab = currentTab,
                 onTabSelected = { tab ->
@@ -53,6 +62,7 @@ fun MainScreen(
                                 restoreState = true
                             }
                         )
+
                         MainTab.SEARCH -> navController.navigateToSearch(
                             navOptions = navOptions {
                                 popUpTo(navController.graph.startDestinationId) {
@@ -62,6 +72,7 @@ fun MainScreen(
                                 restoreState = true
                             }
                         )
+
                         MainTab.MY_PAGE -> navController.navigateToMyPage(
                             navOptions = navOptions {
                                 popUpTo(navController.graph.startDestinationId) {
@@ -83,7 +94,21 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 메인 탭 화면
+            signInNavGraph(
+                navigateToSignUp = navController::navigateToSignUp,
+                navigateToHome = {
+                    navController.navigateToHome(
+                        navOptions = navOptions {
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                        }
+                    )
+                }
+            )
+            signUpNavGraph(
+                navigateToSignIn = navController::navigateToSignIn
+            )
             homeNavGraph(paddingValues)
             searchNavGraph(paddingValues)
             myPageNavGraph(paddingValues)
