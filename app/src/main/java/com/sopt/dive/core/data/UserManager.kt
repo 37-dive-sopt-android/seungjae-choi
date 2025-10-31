@@ -52,4 +52,11 @@ class UserManager(context: Context) {
     fun isAutoLoginEnabled(): Boolean {
         return sharedPreferences.getBoolean(SharedPrefKeys.AUTO_LOGIN, false)
     }
+
+    fun setAutoLogin(enabled: Boolean) {
+        sharedPreferences.edit().apply {
+            putBoolean(SharedPrefKeys.AUTO_LOGIN, enabled)
+            apply()
+        }
+    }
 }
