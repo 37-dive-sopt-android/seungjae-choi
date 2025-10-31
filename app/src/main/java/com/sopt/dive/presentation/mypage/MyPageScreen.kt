@@ -1,69 +1,63 @@
-package com.sopt.dive
+package com.sopt.dive.presentation.mypage
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sopt.dive.R
+import com.sopt.dive.core.data.UserManager
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
-        val userId = intent.getStringExtra("id") ?: ""
-        val userPassword = intent.getStringExtra("password") ?: ""
-        val userName = intent.getStringExtra("name") ?: ""
-        val userNickname = intent.getStringExtra("nickname") ?: ""
-        val userMbti = intent.getStringExtra("mbti") ?: ""
+@Composable
+fun MyPageRoute(
+    paddingValues: PaddingValues,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val userManager = remember { UserManager(context) }
+    val userData = remember { userManager.loadUserData() }
 
-        setContent {
-            DiveTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        userId = userId,
-                        userPassword = userPassword,
-                        userName = userName,
-                        userNickname = userNickname,
-                        userMbti = userMbti,
-                    )
-                }
-            }
-        }
-    }
+    MyPageScreen(
+        paddingValues = paddingValues,
+        modifier = modifier,
+        userId = userData.id,
+        userPassword = userData.password,
+        userName = userData.name,
+        userNickname = userData.nickname,
+        userMbti = userData.mbti
+    )
 }
 
 @Composable
-fun MainScreen(
+private fun MyPageScreen(
+    paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
-    userId: String = "",
-    userPassword: String = "",
-    userName: String = "",
-    userNickname: String = "",
-    userMbti: String = ""
+    userId: String,
+    userPassword: String,
+    userName: String,
+    userNickname: String,
+    userMbti: String
 ) {
     Column(
         modifier = modifier
+            .padding(paddingValues)
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top
@@ -130,8 +124,15 @@ fun MainScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun MainScreenPreview() {
+private fun MyPageScreenPreview() {
     DiveTheme {
-        MainScreen()
+        MyPageScreen(
+            paddingValues = PaddingValues(),
+            userId = "sopt_official",
+            userPassword = "123",
+            userName = "솝트",
+            userNickname = "SOPT",
+            userMbti = "ISFJ"
+        )
     }
 }
