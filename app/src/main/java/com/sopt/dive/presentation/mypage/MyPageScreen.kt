@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
 import com.sopt.dive.core.data.UserManager
+import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 
@@ -28,6 +30,7 @@ import com.sopt.dive.core.designsystem.theme.DiveTheme
 @Composable
 fun MyPageRoute(
     paddingValues: PaddingValues,
+    navigateToSignIn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -41,7 +44,11 @@ fun MyPageRoute(
         userPassword = userData.password,
         userName = userData.name,
         userNickname = userData.nickname,
-        userMbti = userData.mbti
+        userMbti = userData.mbti,
+        onLogoutClick = {
+            userManager.setAutoLogin(false)
+            navigateToSignIn()
+        }
     )
 }
 
@@ -53,7 +60,8 @@ private fun MyPageScreen(
     userPassword: String,
     userName: String,
     userNickname: String,
-    userMbti: String
+    userMbti: String,
+    onLogoutClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -119,6 +127,15 @@ private fun MyPageScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
+
+        SoptButton(
+            label = "로그아웃",
+            onClick = onLogoutClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp)
+        )
     }
 }
 
@@ -132,7 +149,8 @@ private fun MyPageScreenPreview() {
             userPassword = "123",
             userName = "솝트",
             userNickname = "SOPT",
-            userMbti = "ISFJ"
+            userMbti = "ISFJ",
+            onLogoutClick = {}
         )
     }
 }

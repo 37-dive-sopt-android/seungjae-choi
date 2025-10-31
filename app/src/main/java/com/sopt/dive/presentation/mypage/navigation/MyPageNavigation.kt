@@ -16,10 +16,14 @@ fun NavController.navigateToMyPage(navOptions: NavOptions? = null) {
     navigate(MyPage, navOptions)
 }
 
-fun NavGraphBuilder.myPageNavGraph(paddingValues: PaddingValues) {
+fun NavGraphBuilder.myPageNavGraph(
+    paddingValues: PaddingValues,
+    navigateToSignIn: () -> Unit
+) {
     composable<MyPage> {
         MyPageRoute(
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            navigateToSignIn = navigateToSignIn
         )
     }
 }

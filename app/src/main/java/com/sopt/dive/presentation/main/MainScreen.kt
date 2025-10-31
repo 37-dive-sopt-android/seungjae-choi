@@ -109,7 +109,10 @@ fun MainScreen(
             )
             homeNavGraph(paddingValues)
             searchNavGraph(paddingValues)
-            myPageNavGraph(paddingValues)
+            myPageNavGraph(
+                paddingValues = paddingValues,
+                navigateToSignIn = navController::navigateToSignIn
+            )
         }
     }
 }
