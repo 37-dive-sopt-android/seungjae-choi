@@ -39,14 +39,14 @@ fun GiftButton(onClick: () -> Unit) {
             Text(
                 text = "선물하기",
                 fontSize = 12.sp,
-                color = contentColor // 색상 직접 지정
+                color = contentColor
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
                 painter = painterResource(id = R.drawable.ic_gift),
                 contentDescription = "Gift",
                 modifier = Modifier.size(16.dp),
-                tint = contentColor // tint 직접 지정
+                tint = contentColor
             )
         }
     }

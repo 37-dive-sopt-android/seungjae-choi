@@ -32,21 +32,21 @@ fun MusicButton(
         modifier = Modifier
             .noRippleClickable(onClick = onClick)
             .border(BorderStroke(1.dp, contentColor), shape)
-            .clip(shape) // 테두리 모양대로 내용물을 자릅니다.
-            .padding(horizontal = 10.dp, vertical = 4.dp), // OutlinedButton의 contentPadding
+            .clip(shape)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = music,
                 fontSize = 12.sp,
-                color = contentColor // 색상 직접 지정
+                color = contentColor
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_play),
                 contentDescription = "Play Music",
                 modifier = Modifier.size(16.dp),
-                tint = contentColor // tint 직접 지정
+                tint = contentColor
             )
         }
     }
