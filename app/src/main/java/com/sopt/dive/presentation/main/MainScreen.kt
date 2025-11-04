@@ -41,6 +41,14 @@ fun MainScreen(
         currentDestination?.hasRoute(tab.route::class) == true
     }
 
+    val mainTabNavOptions = navOptions {
+        popUpTo(navController.graph.startDestinationId) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -53,33 +61,15 @@ fun MainScreen(
 
                     when (tab) {
                         MainTab.HOME -> navController.navigateToHome(
-                            navOptions = navOptions {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            navOptions = mainTabNavOptions
                         )
 
                         MainTab.SEARCH -> navController.navigateToSearch(
-                            navOptions = navOptions {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            navOptions = mainTabNavOptions
                         )
 
                         MainTab.MY_PAGE -> navController.navigateToMyPage(
-                            navOptions = navOptions {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            navOptions = mainTabNavOptions
                         )
                     }
                 }

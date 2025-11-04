@@ -19,8 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -79,15 +78,14 @@ fun SignInRoute(
 
 @Composable
 private fun SignInScreen(
-    modifier: Modifier = Modifier,
     id: String,
     password: String,
     onIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLaunchSignUp: () -> Unit,
-    onSignInSuccess: () -> Unit
+    onSignInSuccess: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val focusRequesterPassword = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -123,7 +121,7 @@ private fun SignInScreen(
                     imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = { focusRequesterPassword.requestFocus() }
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
             )
 
@@ -140,7 +138,6 @@ private fun SignInScreen(
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus() }
                 ),
-                textFieldModifier = Modifier.focusRequester(focusRequesterPassword),
                 visualTransformation = PasswordVisualTransformation()
             )
         }

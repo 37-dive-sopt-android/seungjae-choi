@@ -28,7 +28,7 @@ fun SoptButton(
                 color = Color.Magenta,
                 shape = RoundedCornerShape(4.dp)
             )
-            .noRippleClickable(onClick),
+            .noRippleClickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Text(

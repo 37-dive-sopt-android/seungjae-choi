@@ -54,14 +54,14 @@ fun MyPageRoute(
 
 @Composable
 private fun MyPageScreen(
-    paddingValues: PaddingValues,
-    modifier: Modifier = Modifier,
     userId: String,
     userPassword: String,
     userName: String,
     userNickname: String,
     userMbti: String,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
 ) {
     Column(
         modifier = modifier
@@ -78,7 +78,7 @@ private fun MyPageScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.profile),
-                contentDescription = null,
+                contentDescription = "${userName} 프로필 이미지",
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
@@ -144,13 +144,13 @@ private fun MyPageScreen(
 private fun MyPageScreenPreview() {
     DiveTheme {
         MyPageScreen(
-            paddingValues = PaddingValues(),
             userId = "sopt_official",
             userPassword = "123",
             userName = "솝트",
             userNickname = "SOPT",
             userMbti = "ISFJ",
-            onLogoutClick = {}
+            onLogoutClick = {},
+            paddingValues = PaddingValues()
         )
     }
 }
