@@ -26,7 +26,6 @@ fun SoptFormField(
     keyboardOptions: KeyboardOptions,
     keyboardActions: KeyboardActions,
     modifier: Modifier = Modifier,
-    textFieldModifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Column(modifier = modifier) {
@@ -46,7 +45,7 @@ fun SoptFormField(
             maxLines = maxLines,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            modifier = textFieldModifier,
+            modifier = Modifier,
             visualTransformation = visualTransformation,
         )
     }
