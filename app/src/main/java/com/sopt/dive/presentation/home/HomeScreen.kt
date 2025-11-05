@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.presentation.home.component.FriendListItem
 import com.sopt.dive.presentation.home.data.Friend
 import com.sopt.dive.presentation.home.data.MyProfile
@@ -20,12 +21,13 @@ import com.sopt.dive.presentation.home.data.myProfileData
 @Composable
 fun HomeRoute(
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel()
 ) {
     HomeScreen(
         paddingValues = paddingValues,
-        myProfile = myProfileData,
-        friendList = dummyFriendList,
+        myProfile = viewModel.myProfile,
+        friendList = viewModel.friendList,
         modifier = modifier
     )
 }
