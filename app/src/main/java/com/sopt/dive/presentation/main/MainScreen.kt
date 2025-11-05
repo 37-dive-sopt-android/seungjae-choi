@@ -41,14 +41,6 @@ fun MainScreen(
         currentDestination?.hasRoute(tab.route::class) == true
     }
 
-    val mainTabNavOptions = navOptions {
-        popUpTo(navController.graph.startDestinationId) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -58,6 +50,14 @@ fun MainScreen(
                 currentTab = currentTab,
                 onTabSelected = { tab ->
                     if (tab == currentTab) return@MainBottomBar
+
+                    val mainTabNavOptions = navOptions {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
 
                     when (tab) {
                         MainTab.HOME -> navController.navigateToHome(
