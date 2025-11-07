@@ -46,8 +46,6 @@ private fun SearchScreen(
     }
 }
 
-enum class CardFace { Front, Back }
-
 @Preview(showBackground = true)
 @Composable
 private fun SearchScreenPreview() {

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.sopt.dive.R
 import com.sopt.dive.core.extention.noRippleClickable
-import com.sopt.dive.presentation.search.CardFace
+import com.sopt.dive.presentation.search.model.CardFace
 
 @Composable
 fun CardFlipSpring(modifier: Modifier = Modifier) {

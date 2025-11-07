@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
 import com.sopt.dive.core.extention.noRippleClickable
-import com.sopt.dive.presentation.search.CardFace
+import com.sopt.dive.presentation.search.model.CardFace
 
 @Composable
 fun CardFlipSimple(modifier: Modifier = Modifier) {
