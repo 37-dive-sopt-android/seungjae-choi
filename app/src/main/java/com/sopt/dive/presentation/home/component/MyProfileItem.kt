@@ -21,7 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.sopt.dive.presentation.home.data.MyProfile
+import com.sopt.dive.presentation.home.model.MyProfile
 
 @Composable
 fun MyProfileItem(

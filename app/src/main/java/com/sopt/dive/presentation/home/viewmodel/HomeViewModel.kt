@@ -1,35 +1,34 @@
-package com.sopt.dive.presentation.home.data
+package com.sopt.dive.presentation.home.viewmodel
 
+import androidx.lifecycle.ViewModel
 import com.sopt.dive.R
+import com.sopt.dive.presentation.home.model.Friend
+import com.sopt.dive.presentation.home.model.FriendAction
+import com.sopt.dive.presentation.home.model.HomeUiState
+import com.sopt.dive.presentation.home.model.MyProfile
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-sealed class FriendAction {
-    data object None : FriendAction()
-    data class Music(val title: String) : FriendAction()
-    data object Gift : FriendAction()
+class HomeViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(
+        HomeUiState(
+            myProfile = myProfileData,
+            friendList = dummyFriendList
+        )
+    )
+
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 }
 
-data class MyProfile(
-    val name: String,
-    val statusMessage: String,
-    val profileImageRes: Int
-)
 
-data class Friend(
-    val id: Int,
-    val name: String,
-    val statusMessage: String,
-    val profileImageRes: Int,
-    val isBirthday: Boolean = false,
-    val action: FriendAction
-)
-
-val myProfileData = MyProfile(
+private val myProfileData = MyProfile(
     name = "최승재",
     statusMessage = "안드 어렵다..",
     profileImageRes = R.drawable.profile
 )
 
-val dummyFriendList = listOf(
+private val dummyFriendList = listOf(
     Friend(1, "유재석", "무한도전~", R.drawable.profile, action = FriendAction.None),
     Friend(2, "아이유", "", R.drawable.profile, action = FriendAction.Music("Love wins all")),
     Friend(3, "차은우", "얼굴천재", R.drawable.profile, isBirthday = true, action = FriendAction.Gift),
