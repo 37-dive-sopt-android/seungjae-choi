@@ -16,7 +16,9 @@ fun CardView(
     @DrawableRes imageRes: Int,
     contentDesc: String,
     rotationY: Float,
-    alpha: Float,
+    alpha: Float = 1f,
+    translationX: Float = 0f,
+    translationY: Float = 0f,
     modifier: Modifier = Modifier
 ) {
     Image(
@@ -28,6 +30,8 @@ fun CardView(
             .graphicsLayer {
                 this.rotationY = rotationY
                 this.alpha = alpha
+                this.translationX = translationX
+                this.translationY = translationY
                 cameraDistance = 12f * density
                 clip = true
                 shape = RoundedCornerShape(24.dp)
