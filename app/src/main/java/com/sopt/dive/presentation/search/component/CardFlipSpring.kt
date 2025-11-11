@@ -18,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.sopt.dive.R
@@ -29,6 +31,7 @@ import com.sopt.dive.presentation.search.model.CardFace
 private const val SPRING_STIFFNESS = 177.8f
 private const val SPRING_DAMPING = 0.75f
 
+@Preview(showBackground = true)
 @Composable
 fun CardFlipSpring(modifier: Modifier = Modifier) {
     var currentState by remember { mutableStateOf(CardFace.Front) }
@@ -82,10 +85,8 @@ fun CardFlipSpring(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    color = Color.Cyan,
-                    shape = RoundedCornerShape(24.dp)
-                )
+                .clip(shape = RoundedCornerShape(24.dp))
+                .background(color = Color.Cyan,)
                 .zIndex(if (currentState == CardFace.Back) 1f else 0f)
         ) {
             Text(
