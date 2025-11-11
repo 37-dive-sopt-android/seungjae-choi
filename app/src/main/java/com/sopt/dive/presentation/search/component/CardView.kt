@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -16,10 +17,10 @@ fun CardView(
     @DrawableRes imageRes: Int,
     contentDesc: String,
     rotationY: Float,
+    modifier: Modifier = Modifier,
     alpha: Float = 1f,
     translationX: Float = 0f,
-    translationY: Float = 0f,
-    modifier: Modifier = Modifier
+    translationY: Float = 0f
 ) {
     Image(
         painter = painterResource(id = imageRes),
@@ -33,9 +34,8 @@ fun CardView(
                 this.translationX = translationX
                 this.translationY = translationY
                 cameraDistance = 12f * density
-                clip = true
-                shape = RoundedCornerShape(24.dp)
             }
+            .clip(shape = RoundedCornerShape(24.dp))
     )
 
 }

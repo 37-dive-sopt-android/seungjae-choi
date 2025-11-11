@@ -45,7 +45,6 @@ fun SoptFormField(
             maxLines = maxLines,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            modifier = Modifier,
             visualTransformation = visualTransformation,
         )
     }

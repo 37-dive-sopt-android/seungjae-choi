@@ -1,16 +1,14 @@
 package com.sopt.dive.presentation.home.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.sopt.dive.R
+import com.sopt.dive.presentation.home.HomeUiState
 import com.sopt.dive.presentation.home.model.Friend
 import com.sopt.dive.presentation.home.model.FriendAction
-import com.sopt.dive.presentation.home.model.HomeUiState
 import com.sopt.dive.presentation.home.model.MyProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -21,22 +19,6 @@ class HomeViewModel : ViewModel() {
     )
 
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    init {
-        loadHomeData()
-    }
-
-    private fun loadHomeData() {
-        viewModelScope.launch {
-            val profile = myProfileData
-            val friends = dummyFriendList
-
-            _uiState.value = HomeUiState(
-                profile,
-                friends
-            )
-        }
-    }
 }
 
 

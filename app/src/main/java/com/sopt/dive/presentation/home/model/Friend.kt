@@ -10,13 +10,6 @@ sealed class FriendAction {
 }
 
 @Immutable
-data class MyProfile(
-    val name: String,
-    val statusMessage: String,
-    val profileImageRes: Int
-)
-
-@Immutable
 data class Friend(
     val id: Int,
     val name: String,
@@ -24,10 +17,4 @@ data class Friend(
     val profileImageRes: Int,
     val isBirthday: Boolean = false,
     val action: FriendAction
-)
-
-@Immutable
-data class HomeUiState(
-    val myProfile: MyProfile,
-    val friendList: List<Friend>
 )

@@ -1,6 +1,5 @@
 package com.sopt.dive.presentation.home
 
-import android.R
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,10 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sopt.dive.R
 import com.sopt.dive.presentation.home.component.FriendListItem
 import com.sopt.dive.presentation.home.model.Friend
 import com.sopt.dive.presentation.home.model.FriendAction
-import com.sopt.dive.presentation.home.model.HomeUiState
 import com.sopt.dive.presentation.home.model.MyProfile
 import com.sopt.dive.presentation.home.viewmodel.HomeViewModel
 
@@ -32,7 +31,8 @@ fun HomeRoute(
 
     HomeScreen(
         paddingValues = paddingValues,
-        uiState = uiState,
+        myProfile = uiState.myProfile,
+        friendList = uiState.friendList,
         modifier = modifier
     )
 }
@@ -40,7 +40,8 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     paddingValues: PaddingValues,
-    uiState: HomeUiState,
+    myProfile: MyProfile,
+    friendList: List<Friend>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -48,7 +49,7 @@ private fun HomeScreen(
         contentPadding = paddingValues
     ) {
         item {
-            MyProfileItem(profile = uiState.myProfile)
+            MyProfileItem(profile = myProfile)
             Divider(
                 color = Color.LightGray,
                 thickness = 0.5.dp,
@@ -57,7 +58,7 @@ private fun HomeScreen(
         }
 
         items(
-            items = uiState.friendList,
+            items = friendList,
             key = { it.id }
         ) { friend ->
             FriendListItem(friend = friend)
@@ -68,38 +69,41 @@ private fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(
-        paddingValues = PaddingValues(0.dp),
-        uiState = HomeUiState(
-            myProfile = MyProfile(
-                name = "최승재",
-                statusMessage = "안드 어렵다..",
-                profileImageRes = R.drawable.ic_menu_gallery
+    val previewState = HomeUiState(
+        myProfile = MyProfile(
+            name = "최승재",
+            statusMessage = "안드 어렵다..",
+            profileImageRes = R.drawable.profile
+        ),
+        friendList = listOf(
+            Friend(
+                id = 1,
+                name = "유재석",
+                statusMessage = "무한도전~",
+                profileImageRes = R.drawable.profile,
+                action = FriendAction.None
             ),
-            friendList = listOf(
-                Friend(
-                    id = 1,
-                    name = "유재석",
-                    statusMessage = "무한도전~",
-                    profileImageRes = R.drawable.ic_menu_gallery,
-                    action = FriendAction.None
-                ),
-                Friend(
-                    id = 2,
-                    name = "아이유",
-                    statusMessage = "",
-                    profileImageRes = R.drawable.ic_menu_gallery,
-                    action = FriendAction.Music("Love wins all")
-                ),
-                Friend(
-                    id = 3,
-                    name = "차은우",
-                    statusMessage = "얼굴천재",
-                    profileImageRes = R.drawable.ic_menu_gallery,
-                    isBirthday = true,
-                    action = FriendAction.Gift
-                )
+            Friend(
+                id = 2,
+                name = "아이유",
+                statusMessage = "",
+                profileImageRes = R.drawable.profile,
+                action = FriendAction.Music("Love wins all")
+            ),
+            Friend(
+                id = 3,
+                name = "차은우",
+                statusMessage = "얼굴천재",
+                profileImageRes = R.drawable.profile,
+                isBirthday = true,
+                action = FriendAction.Gift
             )
         )
+    )
+
+    HomeScreen(
+        paddingValues = PaddingValues(0.dp),
+        myProfile = previewState.myProfile,
+        friendList = previewState.friendList
     )
 }

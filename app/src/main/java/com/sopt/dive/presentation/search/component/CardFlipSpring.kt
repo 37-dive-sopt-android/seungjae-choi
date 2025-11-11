@@ -1,7 +1,6 @@
 package com.sopt.dive.presentation.search.component
 
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffset
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -27,20 +26,29 @@ import com.sopt.dive.R
 import com.sopt.dive.core.extention.noRippleClickable
 import com.sopt.dive.presentation.search.model.CardFace
 
+private const val SPRING_STIFFNESS = 177.8f
+private const val SPRING_DAMPING = 0.75f
+
 @Composable
 fun CardFlipSpring(modifier: Modifier = Modifier) {
     var currentState by remember { mutableStateOf(CardFace.Front) }
     val transition = updateTransition(currentState, label = "transition")
 
-    val targetSpin = if (currentState == CardFace.Front) 0f else 180f
-    val floatSpec = spring<Float>(stiffness = 177.8f, dampingRatio = 0.75f)
-    val offsetSpec = spring<Offset>(stiffness = 177.8f, dampingRatio = 0.75f)
-
-    val spin by animateFloatAsState(
-        targetValue = targetSpin,
-        animationSpec = tween(durationMillis = 1000),
-        label = "spin"
+    val floatSpec = spring<Float>(
+        stiffness = SPRING_STIFFNESS,
+        dampingRatio = SPRING_DAMPING
     )
+    val offsetSpec = spring<Offset>(
+        stiffness = SPRING_STIFFNESS,
+        dampingRatio = SPRING_DAMPING
+    )
+
+    val spin by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 1000) },
+        label = "spin"
+    ) { state ->
+        if (state == CardFace.Front) 0f else 180f
+    }
 
     val textAlpha by transition.animateFloat(
         transitionSpec = { floatSpec },
@@ -72,10 +80,10 @@ fun CardFlipSpring(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Color.Cyan,
+                    color = Color.Cyan,
                     shape = RoundedCornerShape(24.dp)
                 )
                 .zIndex(if (currentState == CardFace.Back) 1f else 0f)
