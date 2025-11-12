@@ -23,8 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
-import com.sopt.dive.presentation.home.data.Friend
-import com.sopt.dive.presentation.home.data.FriendAction
+import com.sopt.dive.presentation.home.model.Friend
+import com.sopt.dive.presentation.home.model.FriendAction
 
 @Composable
 fun FriendListItem(

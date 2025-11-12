@@ -19,8 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontStyle
@@ -81,10 +80,6 @@ private fun SignUpScreen(
     mbti: String, onMbtiChange: (String) -> Unit,
     onSignUpClick: () -> Unit
 ) {
-    val focusRequesterPassword = remember { FocusRequester() }
-    val focusRequesterName = remember { FocusRequester() }
-    val focusRequesterNickname = remember { FocusRequester() }
-    val focusRequesterMbti = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -117,7 +112,9 @@ private fun SignUpScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions(onNext = { focusRequesterPassword.requestFocus() }),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
             )
             SoptFormField(
                 label = "PW", value = password, onValueChange = onPasswordChange,
@@ -127,8 +124,9 @@ private fun SignUpScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions(onNext = { focusRequesterName.requestFocus() }),
-                textFieldModifier = Modifier.focusRequester(focusRequesterPassword)
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
             )
             SoptFormField(
                 label = "NAME", value = name, onValueChange = onNameChange,
@@ -138,8 +136,9 @@ private fun SignUpScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions(onNext = { focusRequesterNickname.requestFocus() }),
-                textFieldModifier = Modifier.focusRequester(focusRequesterName)
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
             )
             SoptFormField(
                 label = "NICKNAME", value = nickname, onValueChange = onNicknameChange,
@@ -149,8 +148,9 @@ private fun SignUpScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions(onNext = { focusRequesterMbti.requestFocus() }),
-                textFieldModifier = Modifier.focusRequester(focusRequesterNickname)
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
             )
             SoptFormField(
                 label = "MBTI", value = mbti, onValueChange = onMbtiChange,
@@ -161,7 +161,6 @@ private fun SignUpScreen(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                textFieldModifier = Modifier.focusRequester(focusRequesterMbti)
             )
         }
 
