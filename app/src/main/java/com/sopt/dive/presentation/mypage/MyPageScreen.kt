@@ -21,10 +21,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
-import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.data.local.UserManager
 
 
 @Composable
@@ -40,11 +40,10 @@ fun MyPageRoute(
     MyPageScreen(
         paddingValues = paddingValues,
         modifier = modifier,
-        userId = userData.id,
-        userPassword = userData.password,
+        userUsername = userData.username,
         userName = userData.name,
-        userNickname = userData.nickname,
-        userMbti = userData.mbti,
+        userEmail = userData.email,
+        userAge = userData.age,
         onLogoutClick = {
             userManager.setAutoLogin(false)
             navigateToSignIn()
@@ -54,11 +53,10 @@ fun MyPageRoute(
 
 @Composable
 private fun MyPageScreen(
-    userId: String,
-    userPassword: String,
+    userUsername: String,
     userName: String,
-    userNickname: String,
-    userMbti: String,
+    userEmail: String,
+    userAge: Int,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
@@ -104,26 +102,20 @@ private fun MyPageScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             SoptInfoField(
-                label = "ID",
-                value = userId,
+                label = "USERNAME",
+                value = userUsername,
                 modifier = Modifier.fillMaxWidth()
             )
 
             SoptInfoField(
-                label = "PW",
-                value = userPassword,
+                label = "EMAIL",
+                value = userEmail,
                 modifier = Modifier.fillMaxWidth()
             )
 
             SoptInfoField(
-                label = "NICKNAME",
-                value = userNickname,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            SoptInfoField(
-                label = "MBTI",
-                value = userMbti,
+                label = "AGE",
+                value = userAge.toString(),
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -144,11 +136,10 @@ private fun MyPageScreen(
 private fun MyPageScreenPreview() {
     DiveTheme {
         MyPageScreen(
-            userId = "sopt_official",
-            userPassword = "123",
+            userUsername = "sopt_user",
             userName = "솝트",
-            userNickname = "SOPT",
-            userMbti = "ISFJ",
+            userEmail = "sopt@naver.com",
+            userAge = 25,
             onLogoutClick = {},
             paddingValues = PaddingValues()
         )
