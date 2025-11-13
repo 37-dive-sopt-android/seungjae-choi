@@ -2,14 +2,15 @@ package com.sopt.dive.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.sopt.dive.data.local.UserManager.SharedPrefKeys.PREFS_NAME
 
 data class UserData(
     val id: String,
-    val password: String,
+    val username: String,
     val name: String,
-    val nickname: String,
-    val mbti: String
+    val email: String,
+    val age: Int,
 )
 
 class UserManager(context: Context) {
@@ -21,32 +22,41 @@ class UserManager(context: Context) {
         const val PREFS_NAME = "user_prefs"
         const val AUTO_LOGIN = "auto_login"
         const val USER_ID = "user_id"
-        const val USER_PASSWORD = "user_password"
+        const val USER_USERNAME = "user_username"
         const val USER_NAME = "user_name"
-        const val USER_NICKNAME = "user_nickname"
-        const val USER_MBTI = "user_mbti"
+        const val USER_EMAIL = "user_email"
+        const val USER_AGE = "user_age"
     }
 
     fun loadUserData(): UserData {
         return UserData(
             id = sharedPreferences.getString(SharedPrefKeys.USER_ID, "") ?: "",
-            password = sharedPreferences.getString(SharedPrefKeys.USER_PASSWORD, "") ?: "",
+            username = sharedPreferences.getString(SharedPrefKeys.USER_USERNAME, "") ?: "",
             name = sharedPreferences.getString(SharedPrefKeys.USER_NAME, "") ?: "",
-            nickname = sharedPreferences.getString(SharedPrefKeys.USER_NICKNAME, "") ?: "",
-            mbti = sharedPreferences.getString(SharedPrefKeys.USER_MBTI, "") ?: ""
+            email = sharedPreferences.getString(SharedPrefKeys.USER_EMAIL, "") ?: "",
+            age = sharedPreferences.getInt(SharedPrefKeys.USER_AGE, 0)
         )
     }
 
-    fun saveUserData(data: UserData) {
-        sharedPreferences.edit().apply {
-            putString(SharedPrefKeys.USER_ID, data.id)
-            putString(SharedPrefKeys.USER_PASSWORD, data.password)
-            putString(SharedPrefKeys.USER_NAME, data.name)
-            putString(SharedPrefKeys.USER_NICKNAME, data.nickname)
-            putString(SharedPrefKeys.USER_MBTI, data.mbti)
+    fun saveRegisterResponse(
+        id: Int,
+        username: String,
+        name: String,
+        email: String,
+        age: Int
+    ) {
+        sharedPreferences.edit {
+            putString(SharedPrefKeys.USER_ID, id.toString())
+            putString(SharedPrefKeys.USER_USERNAME, username)
+            putString(SharedPrefKeys.USER_NAME, name)
+            putString(SharedPrefKeys.USER_EMAIL, email)
+            putInt(SharedPrefKeys.USER_AGE, age)
             putBoolean(SharedPrefKeys.AUTO_LOGIN, true)
-            apply()
         }
+    }
+
+    fun setUserId(id: String) {
+        sharedPreferences.edit { putString(SharedPrefKeys.USER_ID, id) }
     }
 
     fun isAutoLoginEnabled(): Boolean {
