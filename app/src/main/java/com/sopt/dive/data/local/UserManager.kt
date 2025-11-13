@@ -1,8 +1,8 @@
-package com.sopt.dive.core.data
+package com.sopt.dive.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.sopt.dive.core.data.UserManager.SharedPrefKeys.PREFS_NAME
+import com.sopt.dive.data.local.UserManager.SharedPrefKeys.PREFS_NAME
 
 data class UserData(
     val id: String,
