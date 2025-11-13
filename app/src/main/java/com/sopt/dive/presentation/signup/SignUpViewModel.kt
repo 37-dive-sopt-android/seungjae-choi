@@ -64,7 +64,7 @@ class SignUpViewModel(
                 )
             ).onSuccess { response ->
                 userManager.setUserId(response.id.toString())
-                userManager.saveRegisterResponse(
+                userManager.saveUserData(
                     id = response.id,
                     username = response.username,
                     name = response.name,

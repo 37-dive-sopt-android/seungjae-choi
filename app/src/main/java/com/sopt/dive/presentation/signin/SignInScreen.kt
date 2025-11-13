@@ -49,6 +49,7 @@ fun SignInRoute(
     val viewModel : SignInViewModel = viewModel(
         factory = ViewModelFactory(
             authRepository = RepositoryModule.authRepository,
+            userRepository  = RepositoryModule.userRepository,
             context = context
         )
     )

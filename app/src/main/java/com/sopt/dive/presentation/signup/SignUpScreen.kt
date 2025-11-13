@@ -44,6 +44,7 @@ fun SignUpRoute(
     val viewModel : SignUpViewModel = viewModel(
         factory = ViewModelFactory(
             authRepository = RepositoryModule.authRepository,
+            userRepository  = RepositoryModule.userRepository,
             context = context
         )
     )

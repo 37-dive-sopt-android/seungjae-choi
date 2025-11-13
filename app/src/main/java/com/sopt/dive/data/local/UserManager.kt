@@ -38,7 +38,7 @@ class UserManager(context: Context) {
         )
     }
 
-    fun saveRegisterResponse(
+    fun saveUserData(
         id: Int,
         username: String,
         name: String,
