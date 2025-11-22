@@ -24,7 +24,7 @@ class MyPageViewModel(
 
     fun loadUserProfile() {
         val currentUserIdString = userManager.loadUserData().id
-        val userId = currentUserIdString.toIntOrNull()
+        val userId = currentUserIdString.toLongOrNull()
 
         if (userId == null || userId <= 0) {
             _uiState.update { it.copy(errorMessage = "유효한 사용자 ID가 없습니다.") }
