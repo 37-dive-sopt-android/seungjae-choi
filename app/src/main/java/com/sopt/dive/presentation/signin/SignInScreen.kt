@@ -38,6 +38,7 @@ import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.noRippleClickable
 import com.sopt.dive.core.extention.showToast
+import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
 
@@ -47,12 +48,14 @@ fun SignInRoute(
     onSignInSuccess: () -> Unit
 ) {
     val context = LocalContext.current
+    val userManager = remember { UserManager(context) }
+
     val viewModel : SignInViewModel = viewModel(
         factory = remember {
             ViewModelFactory(
                 authRepository = RepositoryModule.authRepository,
                 userRepository = RepositoryModule.userRepository,
-                context = context
+                userManager = userManager
             )
         }
     )
