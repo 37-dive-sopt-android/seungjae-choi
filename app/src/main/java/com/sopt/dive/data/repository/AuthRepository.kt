@@ -3,11 +3,11 @@ package com.sopt.dive.data.repository
 import com.sopt.dive.data.dto.request.LogInRequestDto
 import com.sopt.dive.data.dto.request.RegisterRequestDto
 import com.sopt.dive.data.dto.response.LoginResponseDto
-import com.sopt.dive.data.dto.response.RegisterResponseDto
+import com.sopt.dive.data.dto.response.UserDetailResponseDto
 import com.sopt.dive.data.service.AuthService
 
 class AuthRepository(private val authService: AuthService) {
-    suspend fun register(request: RegisterRequestDto): Result<RegisterResponseDto> = runCatching {
+    suspend fun register(request: RegisterRequestDto): Result<UserDetailResponseDto> = runCatching {
         val response = authService.register(request)
 
         if (response.success) {
