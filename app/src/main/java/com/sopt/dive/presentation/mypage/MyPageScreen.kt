@@ -43,12 +43,14 @@ fun MyPageRoute(
 ) {
     val context = LocalContext.current
     val userManager = remember { UserManager(context) }
-    val viewModel : MyPageViewModel = viewModel(
-        factory = ViewModelFactory(
-            authRepository = RepositoryModule.authRepository,
-            userRepository  = RepositoryModule.userRepository,
-            context = context
-        )
+    val viewModel: MyPageViewModel = viewModel(
+        factory = remember {
+            ViewModelFactory(
+                authRepository = RepositoryModule.authRepository,
+                userRepository = RepositoryModule.userRepository,
+                context = context
+            )
+        }
     )
     val uiState by viewModel.uiState.collectAsState()
 
