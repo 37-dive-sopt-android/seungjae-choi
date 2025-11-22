@@ -43,7 +43,7 @@ class SignInViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
 
-            authRepository.login(
+            authRepository.postLogin(
                 LogInRequestDto(username = currentState.username, password = currentState.password)
             ).onSuccess { response ->
                 userManager.setUserId(response.userId.toString())

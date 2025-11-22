@@ -7,8 +7,8 @@ import com.sopt.dive.data.dto.response.UserDetailResponseDto
 import com.sopt.dive.data.service.AuthService
 
 class AuthRepository(private val authService: AuthService) {
-    suspend fun register(request: RegisterRequestDto): Result<UserDetailResponseDto> = runCatching {
-        val response = authService.register(request)
+    suspend fun postRegister(request: RegisterRequestDto): Result<UserDetailResponseDto> = runCatching {
+        val response = authService.postRegister(request)
 
         if (response.success) {
             response.data ?: throw IllegalStateException()
@@ -17,8 +17,8 @@ class AuthRepository(private val authService: AuthService) {
         }
     }
 
-    suspend fun login(request: LogInRequestDto): Result<LoginResponseDto> = runCatching {
-        val response = authService.login(request)
+    suspend fun postLogin(request: LogInRequestDto): Result<LoginResponseDto> = runCatching {
+        val response = authService.postLogin(request)
 
         if (response.success) {
             response.data ?: throw IllegalStateException()

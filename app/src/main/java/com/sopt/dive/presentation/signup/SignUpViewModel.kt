@@ -57,7 +57,7 @@ class SignUpViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
 
-            authRepository.register(
+            authRepository.postRegister(
                 RegisterRequestDto(
                     username = currentState.username, password = currentState.password,
                     name = currentState.name, email = currentState.email, age = ageInt
