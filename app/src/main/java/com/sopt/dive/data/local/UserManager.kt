@@ -30,10 +30,10 @@ class UserManager(context: Context) {
 
     fun loadUserData(): UserData {
         return UserData(
-            id = sharedPreferences.getString(SharedPrefKeys.USER_ID, "") ?: "",
-            username = sharedPreferences.getString(SharedPrefKeys.USER_USERNAME, "") ?: "",
-            name = sharedPreferences.getString(SharedPrefKeys.USER_NAME, "") ?: "",
-            email = sharedPreferences.getString(SharedPrefKeys.USER_EMAIL, "") ?: "",
+            id = sharedPreferences.getString(SharedPrefKeys.USER_ID, "").orEmpty(),
+            username = sharedPreferences.getString(SharedPrefKeys.USER_USERNAME, "").orEmpty(),
+            name = sharedPreferences.getString(SharedPrefKeys.USER_NAME, "").orEmpty(),
+            email = sharedPreferences.getString(SharedPrefKeys.USER_EMAIL, "").orEmpty(),
             age = sharedPreferences.getInt(SharedPrefKeys.USER_AGE, 0)
         )
     }
