@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginResponseDto(
     @SerialName("userId")
-    val userId: Int,
+    val userId: Long,
     @SerialName("message")
     val message: String
 )
