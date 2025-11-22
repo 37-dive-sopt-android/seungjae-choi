@@ -63,7 +63,6 @@ class SignUpViewModel(
                     name = currentState.name, email = currentState.email, age = ageInt
                 )
             ).onSuccess { response ->
-                userManager.setUserId(response.id.toString())
                 userManager.saveUserData(
                     id = response.id,
                     username = response.username,
