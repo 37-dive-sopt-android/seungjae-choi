@@ -55,11 +55,14 @@ fun MyPageRoute(
     )
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
+    LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage != null) {
             context.showToast(uiState.errorMessage!!)
             viewModel.resetMessageState()
         }
+    }
+
+    LaunchedEffect(uiState.successMessage) {
         if (uiState.successMessage != null) {
             context.showToast(uiState.successMessage!!)
             viewModel.resetMessageState()

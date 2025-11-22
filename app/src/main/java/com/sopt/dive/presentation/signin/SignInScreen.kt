@@ -61,11 +61,15 @@ fun SignInRoute(
     )
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.isSuccess, uiState.successMessage, uiState.errorMessage) {        if (uiState.isSuccess && uiState.successMessage != null) {
+    LaunchedEffect(uiState.isSuccess, uiState.successMessage) {
+        if (uiState.isSuccess && uiState.successMessage != null) {
             context.showToast(uiState.successMessage!!)
             viewModel.resetMessageState()
             onSignInSuccess()
         }
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
         if (uiState.errorMessage != null) {
             context.showToast(uiState.errorMessage!!)
             viewModel.resetMessageState()
