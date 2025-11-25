@@ -41,6 +41,7 @@ import com.sopt.dive.core.extention.showToast
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
+import com.sopt.uniqlo.core.util.UiState
 
 @Composable
 fun SignInRoute(
@@ -61,18 +62,16 @@ fun SignInRoute(
     )
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.isSuccess, uiState.successMessage) {
-        if (uiState.isSuccess && uiState.successMessage != null) {
-            context.showToast(uiState.successMessage!!)
-            viewModel.resetMessageState()
-            onSignInSuccess()
-        }
-    }
-
-    LaunchedEffect(uiState.errorMessage) {
-        if (uiState.errorMessage != null) {
-            context.showToast(uiState.errorMessage!!)
-            viewModel.resetMessageState()
+    LaunchedEffect(uiState.loginState) {
+        when (val state = uiState.loginState) {
+            is UiState.Success -> {
+                context.showToast("로그인 성공!")
+                onSignInSuccess()
+            }
+            is UiState.Failure -> {
+                context.showToast(state.msg)
+            }
+            else -> {}
         }
     }
 
@@ -83,7 +82,6 @@ fun SignInRoute(
         onPasswordChange = viewModel::updatePassword,
         onLaunchSignUp = onSignUpClick,
         onSignInSuccess = viewModel::login,
-        isLoading = uiState.isLoading
     )
 }
 
@@ -96,7 +94,6 @@ private fun SignInScreen(
     onLaunchSignUp: () -> Unit,
     onSignInSuccess: () -> Unit,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -166,8 +163,8 @@ private fun SignInScreen(
         )
 
         SoptButton(
-            label = if (isLoading) "로그인 중..." else "로그인 하기",
-            onClick = { if (!isLoading) onSignInSuccess() },
+            label = "로그인 하기",
+            onClick = { onSignInSuccess() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 24.dp)

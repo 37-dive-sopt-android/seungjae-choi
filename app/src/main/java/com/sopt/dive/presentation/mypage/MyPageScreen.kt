@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,16 +22,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.showToast
-import com.sopt.dive.data.dto.response.UserDetailResponseDto
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
+import com.sopt.dive.presentation.mypage.model.MyPageProfileUiModel
+import com.sopt.uniqlo.core.util.UiState
 
 
 @Composable
@@ -53,46 +54,47 @@ fun MyPageRoute(
             )
         }
     )
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.errorMessage) {
-        if (uiState.errorMessage != null) {
-            context.showToast(uiState.errorMessage!!)
-            viewModel.resetMessageState()
+    LaunchedEffect(uiState.profileState) {
+        when (val state = uiState.profileState) {
+            is UiState.Success -> {
+                context.showToast("프로필을 불러왔습니다.")
+            }
+            is UiState.Failure -> {
+                context.showToast(state.msg)
+            }
+            else -> {}
         }
     }
 
-    LaunchedEffect(uiState.successMessage) {
-        if (uiState.successMessage != null) {
-            context.showToast(uiState.successMessage!!)
-            viewModel.resetMessageState()
+    when (val state = uiState.profileState) {
+        is UiState.Success -> {
+            MyPageScreen(
+                paddingValues = paddingValues,
+                modifier = modifier,
+                profile = state.data,
+                onLogoutClick = {
+                    userManager.setAutoLogin(false)
+                    navigateToSignIn()
+                },
+            )
         }
+        else -> {}
     }
-
-    MyPageScreen(
-        paddingValues = paddingValues,
-        modifier = modifier,
-        profile = uiState.profile,
-        onLogoutClick = {
-            userManager.setAutoLogin(false)
-            navigateToSignIn()
-        },
-        isLoading = uiState.isLoading
-    )
 }
 
 @Composable
 private fun MyPageScreen(
-    profile: UserDetailResponseDto?,
+    profile: MyPageProfileUiModel,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
-    isLoading: Boolean = false
 ) {
-    val userName = profile?.name.orEmpty()
-    val userUsername = profile?.username.orEmpty()
-    val userEmail = profile?.email.orEmpty()
-    val userAge = profile?.age?.toString().orEmpty()
+    val userName = profile.name
+    val userUsername = profile.username
+    val userEmail = profile.email
+    val userAge = profile.age
 
     Column(
         modifier = modifier
@@ -155,7 +157,7 @@ private fun MyPageScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         SoptButton(
-            label = if (isLoading) "불러오는 중..." else "로그아웃",
+            label = "로그아웃",
             onClick = onLogoutClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -169,13 +171,11 @@ private fun MyPageScreen(
 private fun MyPageScreenPreview() {
     DiveTheme {
         MyPageScreen(
-            profile = UserDetailResponseDto(
-                id = 999,
-                username = "sopt_user",
+            profile = MyPageProfileUiModel(
                 name = "솝트",
+                username = "sopt_user",
                 email = "sopt@naver.com",
-                age = 25,
-                status = "ACTIVE"
+                age = "25"
             ),
             onLogoutClick = {},
             paddingValues = PaddingValues()

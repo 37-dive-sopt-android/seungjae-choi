@@ -37,6 +37,7 @@ import com.sopt.dive.core.extention.showToast
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
+import com.sopt.uniqlo.core.util.UiState
 
 @Composable
 fun SignUpRoute(
@@ -56,18 +57,16 @@ fun SignUpRoute(
     )
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.isSuccess, uiState.successMessage) {
-        if (uiState.isSuccess && uiState.successMessage != null) {
-            context.showToast(uiState.successMessage!!)
-            viewModel.resetMessageState()
-            onSignUpComplete()
-        }
-    }
-
-    LaunchedEffect(uiState.errorMessage) {
-        if (uiState.errorMessage != null) {
-            context.showToast(uiState.errorMessage!!)
-            viewModel.resetMessageState()
+    LaunchedEffect(uiState.registerState) {
+        when (val state = uiState.registerState) {
+            is UiState.Success -> {
+                context.showToast("회원가입 성공!")
+                onSignUpComplete()
+            }
+            is UiState.Failure -> {
+                context.showToast(state.msg)
+            }
+            else -> {}
         }
     }
 
@@ -83,7 +82,6 @@ fun SignUpRoute(
         age = uiState.age,
         onAgeChange = viewModel::updateAge,
         onSignUpClick = viewModel::register,
-        isLoading = uiState.isLoading
     )
 }
 
@@ -101,7 +99,6 @@ private fun SignUpScreen(
     onAgeChange: (String) -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -190,8 +187,8 @@ private fun SignUpScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         SoptButton(
-            label = if (isLoading) "회원가입 중..." else "회원가입 하기",
-            onClick = { if (!isLoading) onSignUpClick() },
+            label = "회원가입 하기",
+            onClick = { onSignUpClick() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 24.dp)
