@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,12 +22,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
-import com.sopt.dive.core.data.UserManager
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
-
+import com.sopt.dive.core.extention.showToast
+import com.sopt.dive.core.util.UiState
+import com.sopt.dive.data.local.UserManager
+import com.sopt.dive.data.repository.RepositoryModule
+import com.sopt.dive.presentation.common.ViewModelFactory
+import com.sopt.dive.presentation.mypage.model.MyPageProfileUiModel
 
 @Composable
 fun MyPageRoute(
@@ -35,34 +43,58 @@ fun MyPageRoute(
 ) {
     val context = LocalContext.current
     val userManager = remember { UserManager(context) }
-    val userData = remember { userManager.loadUserData() }
 
-    MyPageScreen(
-        paddingValues = paddingValues,
-        modifier = modifier,
-        userId = userData.id,
-        userPassword = userData.password,
-        userName = userData.name,
-        userNickname = userData.nickname,
-        userMbti = userData.mbti,
-        onLogoutClick = {
-            userManager.setAutoLogin(false)
-            navigateToSignIn()
+    val viewModel: MyPageViewModel = viewModel(
+        factory = remember {
+            ViewModelFactory(
+                authRepository = RepositoryModule.authRepository,
+                userRepository = RepositoryModule.userRepository,
+                userManager = userManager
+            )
         }
     )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.profileState) {
+        when (val state = uiState.profileState) {
+            is UiState.Success -> {
+                context.showToast("프로필을 불러왔습니다.")
+            }
+            is UiState.Failure -> {
+                context.showToast(state.msg)
+            }
+            else -> {}
+        }
+    }
+
+    when (val state = uiState.profileState) {
+        is UiState.Success -> {
+            MyPageScreen(
+                paddingValues = paddingValues,
+                modifier = modifier,
+                profile = state.data,
+                onLogoutClick = {
+                    userManager.setAutoLogin(false)
+                    navigateToSignIn()
+                },
+            )
+        }
+        else -> {}
+    }
 }
 
 @Composable
 private fun MyPageScreen(
-    userId: String,
-    userPassword: String,
-    userName: String,
-    userNickname: String,
-    userMbti: String,
+    profile: MyPageProfileUiModel,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
 ) {
+    val userName = profile.name
+    val userUsername = profile.username
+    val userEmail = profile.email
+    val userAge = profile.age
+
     Column(
         modifier = modifier
             .padding(paddingValues)
@@ -104,26 +136,20 @@ private fun MyPageScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             SoptInfoField(
-                label = "ID",
-                value = userId,
+                label = "USERNAME",
+                value = userUsername,
                 modifier = Modifier.fillMaxWidth()
             )
 
             SoptInfoField(
-                label = "PW",
-                value = userPassword,
+                label = "EMAIL",
+                value = userEmail,
                 modifier = Modifier.fillMaxWidth()
             )
 
             SoptInfoField(
-                label = "NICKNAME",
-                value = userNickname,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            SoptInfoField(
-                label = "MBTI",
-                value = userMbti,
+                label = "AGE",
+                value = userAge,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -144,11 +170,12 @@ private fun MyPageScreen(
 private fun MyPageScreenPreview() {
     DiveTheme {
         MyPageScreen(
-            userId = "sopt_official",
-            userPassword = "123",
-            userName = "솝트",
-            userNickname = "SOPT",
-            userMbti = "ISFJ",
+            profile = MyPageProfileUiModel(
+                name = "솝트",
+                username = "sopt_user",
+                email = "sopt@naver.com",
+                age = "25"
+            ),
             onLogoutClick = {},
             paddingValues = PaddingValues()
         )

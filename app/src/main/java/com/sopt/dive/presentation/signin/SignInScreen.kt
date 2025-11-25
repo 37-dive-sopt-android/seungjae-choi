@@ -13,10 +13,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -32,13 +31,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.data.UserManager
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.noRippleClickable
 import com.sopt.dive.core.extention.showToast
-import com.sopt.dive.core.util.Validator
+import com.sopt.dive.core.util.UiState
+import com.sopt.dive.data.local.UserManager
+import com.sopt.dive.data.repository.RepositoryModule
+import com.sopt.dive.presentation.common.ViewModelFactory
 
 @Composable
 fun SignInRoute(
@@ -47,44 +50,50 @@ fun SignInRoute(
 ) {
     val context = LocalContext.current
     val userManager = remember { UserManager(context) }
-    val userData = remember { userManager.loadUserData() }
 
-    var id by remember(userData.id) { mutableStateOf(userData.id) }
-    var password by remember(userData.password) { mutableStateOf(userData.password) }
+    val viewModel : SignInViewModel = viewModel(
+        factory = remember {
+            ViewModelFactory(
+                authRepository = RepositoryModule.authRepository,
+                userRepository = RepositoryModule.userRepository,
+                userManager = userManager
+            )
+        }
+    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.loginState) {
+        when (val state = uiState.loginState) {
+            is UiState.Success -> {
+                context.showToast("로그인 성공!")
+                onSignInSuccess()
+            }
+            is UiState.Failure -> {
+                context.showToast(state.msg)
+            }
+            else -> {}
+        }
+    }
 
     SignInScreen(
-        id = id,
-        password = password,
-        onIdChange = { id = it },
-        onPasswordChange = { password = it },
+        username = uiState.username,
+        password = uiState.password,
+        onUsernameChange = viewModel::updateUsername,
+        onPasswordChange = viewModel::updatePassword,
         onLaunchSignUp = onSignUpClick,
-        onSignInSuccess = {
-            val validationError = Validator.validateSignInInputs(id, password)
-            if (validationError != null) {
-                context.showToast(validationError)
-                return@SignInScreen
-            }
-
-            if (id == userData.id && password == userData.password) {
-                context.showToast("로그인에 성공했습니다!")
-                userManager.setAutoLogin(true)
-                onSignInSuccess()
-            } else {
-                context.showToast("아이디 또는 비밀번호가 틀렸습니다.")
-            }
-        }
+        onSignInSuccess = viewModel::login,
     )
 }
 
 @Composable
 private fun SignInScreen(
-    id: String,
+    username: String,
     password: String,
-    onIdChange: (String) -> Unit,
+    onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLaunchSignUp: () -> Unit,
     onSignInSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -111,9 +120,9 @@ private fun SignInScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             SoptFormField(
-                label = "ID",
-                value = id,
-                onValueChange = onIdChange,
+                label = "USERNAME",
+                value = username,
+                onValueChange = onUsernameChange,
                 placeholder = "아이디를 입력해주세요.",
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
@@ -168,9 +177,9 @@ private fun SignInScreen(
 private fun SignInScreenPreview() {
     DiveTheme {
         SignInScreen(
-            id = "",
+            username = "",
             password = "",
-            onIdChange = {},
+            onUsernameChange = {},
             onPasswordChange = {},
             onLaunchSignUp = {},
             onSignInSuccess = {}

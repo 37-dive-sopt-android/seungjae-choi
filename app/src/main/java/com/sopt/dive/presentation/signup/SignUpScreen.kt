@@ -13,10 +13,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -29,13 +28,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.data.UserData
-import com.sopt.dive.core.data.UserManager
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.showToast
-import com.sopt.dive.core.util.Validator
+import com.sopt.dive.core.util.UiState
+import com.sopt.dive.data.local.UserManager
+import com.sopt.dive.data.repository.RepositoryModule
+import com.sopt.dive.presentation.common.ViewModelFactory
 
 @Composable
 fun SignUpRoute(
@@ -44,41 +46,59 @@ fun SignUpRoute(
     val context = LocalContext.current
     val userManager = remember { UserManager(context) }
 
-    var id by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var nickname by remember { mutableStateOf("") }
-    var mbti by remember { mutableStateOf("") }
+    val viewModel : SignUpViewModel = viewModel(
+        factory = remember {
+            ViewModelFactory(
+                authRepository = RepositoryModule.authRepository,
+                userRepository = RepositoryModule.userRepository,
+                userManager = userManager
+            )
+        }
+    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    SignUpScreen(
-        id = id, onIdChange = { id = it },
-        password = password, onPasswordChange = { password = it },
-        name = name, onNameChange = { name = it },
-        nickname = nickname, onNicknameChange = { nickname = it },
-        mbti = mbti, onMbtiChange = { mbti = it },
-        onSignUpClick = {
-            val errorMessage = Validator.validateSignUpInputs(id, password, name, nickname, mbti)
-            if (errorMessage != null) {
-                context.showToast(errorMessage)
-            } else {
-                userManager.saveUserData(UserData(id, password, name, nickname, mbti))
-                context.showToast("회원가입에 성공했습니다!")
-
+    LaunchedEffect(uiState.registerState) {
+        when (val state = uiState.registerState) {
+            is UiState.Success -> {
+                context.showToast("회원가입 성공!")
                 onSignUpComplete()
             }
+            is UiState.Failure -> {
+                context.showToast(state.msg)
+            }
+            else -> {}
         }
+    }
+
+    SignUpScreen(
+        username = uiState.username,
+        onUsernameChange = viewModel::updateUsername,
+        password = uiState.password,
+        onPasswordChange = viewModel::updatePassword,
+        name = uiState.name,
+        onNameChange = viewModel::updateName,
+        email = uiState.email,
+        onEmailChange = viewModel::updateEmail,
+        age = uiState.age,
+        onAgeChange = viewModel::updateAge,
+        onSignUpClick = viewModel::register,
     )
 }
 
 @Composable
 private fun SignUpScreen(
+    username: String,
+    password: String,
+    name: String,
+    email: String,
+    age: String,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onNameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onAgeChange: (String) -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
-    id: String, onIdChange: (String) -> Unit,
-    password: String, onPasswordChange: (String) -> Unit,
-    name: String, onNameChange: (String) -> Unit,
-    nickname: String, onNicknameChange: (String) -> Unit,
-    mbti: String, onMbtiChange: (String) -> Unit,
-    onSignUpClick: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -105,8 +125,8 @@ private fun SignUpScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             SoptFormField(
-                label = "ID", value = id, onValueChange = onIdChange,
-                placeholder = "아이디를 입력해주세요.",
+                label = "USERNAME", value = username, onValueChange = onUsernameChange,
+                placeholder = "사용자 이름을 입력해주세요.",
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -141,8 +161,8 @@ private fun SignUpScreen(
                 ),
             )
             SoptFormField(
-                label = "NICKNAME", value = nickname, onValueChange = onNicknameChange,
-                placeholder = "닉네임을 입력해주세요.",
+                label = "EMAIL", value = email, onValueChange = onEmailChange,
+                placeholder = "이메일을 입력해주세요.",
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -153,8 +173,8 @@ private fun SignUpScreen(
                 ),
             )
             SoptFormField(
-                label = "MBTI", value = mbti, onValueChange = onMbtiChange,
-                placeholder = "MBTI를 입력해주세요.",
+                label = "AGE", value = age, onValueChange = onAgeChange,
+                placeholder = "나이를 입력해주세요.",
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Ascii,
@@ -182,16 +202,16 @@ private fun SignUpScreen(
 private fun SignUpScreenPreview() {
     DiveTheme {
         SignUpScreen(
-            id = "",
-            onIdChange = {},
+            username = "",
             password = "",
-            onPasswordChange = {},
             name = "",
+            email = "",
+            age = "",
+            onUsernameChange = {},
+            onPasswordChange = {},
             onNameChange = {},
-            nickname = "",
-            onNicknameChange = {},
-            mbti = "",
-            onMbtiChange = {},
+            onEmailChange = {},
+            onAgeChange = {},
             onSignUpClick = {}
         )
     }

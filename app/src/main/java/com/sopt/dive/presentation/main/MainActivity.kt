@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.sopt.dive.core.data.UserManager
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.presentation.home.navigation.Home
 import com.sopt.dive.presentation.signup.SignIn
 
@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         val autoLogin = userManager.isAutoLoginEnabled()
         val userData = userManager.loadUserData()
 
-        return if (autoLogin && userData.id.isNotEmpty() && userData.password.isNotEmpty()) {
+        return if (autoLogin && userData.id.isNotEmpty()) {
             Home
         } else {
             SignIn
