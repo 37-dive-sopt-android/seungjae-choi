@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.UserRepository
+import com.sopt.dive.presentation.mypage.model.toMyPageProfileUiModel
+import com.sopt.uniqlo.core.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,44 +29,38 @@ class MyPageViewModel(
         val userId = currentUserIdString.toLongOrNull()
 
         if (userId == null || userId <= 0) {
-            _uiState.update { it.copy(errorMessage = "유효한 사용자 ID가 없습니다.") }
+            _uiState.update { it.copy(profileState = UiState.Failure("유효한 사용자 ID가 없습니다.")) }
             return
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.update { it.copy(profileState = UiState.Loading) }
 
             userRepository.getUser(userId)
-                .onSuccess { response ->
+                .onSuccess { userModel ->
+                    val uiModel = userModel.toMyPageProfileUiModel()
+
                     userManager.saveUserData(
-                        id = response.id,
-                        username = response.username,
-                        name = response.name,
-                        email = response.email,
-                        age = response.age
+                        id = userModel.id,
+                        username = userModel.username,
+                        name = userModel.name,
+                        email = userModel.email,
+                        age = userModel.age
                     )
 
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
-                            profile = response,
-                            successMessage = "${response.name}님의 프로필을 불러왔습니다."
+                            profileState = UiState.Success(uiModel)
                         )
                     }
                 }
                 .onFailure { throwable ->
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
-                            errorMessage = throwable.message ?: "프로필 조회에 실패했습니다."
+                            profileState = UiState.Failure(throwable.message ?: "프로필 조회에 실패했습니다.")
                         )
                     }
                 }
         }
     }
-
-    fun resetMessageState() {
-        _uiState.update { it.copy(errorMessage = null, successMessage = null) }
-    }
-
 }

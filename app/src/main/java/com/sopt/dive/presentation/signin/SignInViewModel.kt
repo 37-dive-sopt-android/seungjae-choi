@@ -3,9 +3,10 @@ package com.sopt.dive.presentation.signin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sopt.dive.core.util.Validator
-import com.sopt.dive.data.dto.request.LogInRequestDto
 import com.sopt.dive.data.local.UserManager
+import com.sopt.dive.data.model.LoginRequestModel
 import com.sopt.dive.data.repository.AuthRepository
+import com.sopt.uniqlo.core.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,37 +37,30 @@ class SignInViewModel(
         )
 
         if (validationError != null) {
-            _uiState.update { it.copy(errorMessage = validationError) }
+            _uiState.update { it.copy(loginState = UiState.Failure(validationError)) }
             return
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
+            _uiState.update { it.copy(loginState = UiState.Loading) }
 
             authRepository.postLogin(
-                LogInRequestDto(username = currentState.username, password = currentState.password)
+                LoginRequestModel(
+                    username = currentState.username,
+                    password = currentState.password
+                )
             ).onSuccess { response ->
                 userManager.setUserId(response.userId.toString())
                 userManager.setAutoLogin(true)
 
                 _uiState.update { it.copy(
-                    isLoading = false,
-                    isSuccess = true,
-                    successMessage = response.message,
-                    errorMessage = null
+                    loginState = UiState.Success(response)
                 ) }
             }.onFailure { throwable ->
                 _uiState.update { it.copy(
-                    isLoading = false,
-                    isSuccess = false,
-                    errorMessage = throwable.message ?: "알 수 없는 오류가 발생했습니다.",
-                    successMessage = null
+                    loginState = UiState.Failure(throwable.message ?: "알 수 없는 오류가 발생했습니다.")
                 ) }
             }
         }
-    }
-
-    fun resetMessageState() {
-        _uiState.update { it.copy(errorMessage = null, successMessage = null) }
     }
 }

@@ -3,9 +3,10 @@ package com.sopt.dive.presentation.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sopt.dive.core.util.Validator
-import com.sopt.dive.data.dto.request.RegisterRequestDto
 import com.sopt.dive.data.local.UserManager
-import com.sopt.dive.data.repository.AuthRepository
+import com.sopt.dive.data.model.RegisterRequestModel
+import com.sopt.dive.data.repository.UserRepository
+import com.sopt.uniqlo.core.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
-    private val authRepository: AuthRepository,
-    private val userManager: UserManager
+    private val userManager: UserManager,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiState())
@@ -48,47 +49,37 @@ class SignUpViewModel(
         )
 
         if (validationError != null) {
-            _uiState.update { it.copy(errorMessage = validationError) }
+            _uiState.update { it.copy(registerState = UiState.Failure(validationError)) }
             return
         }
 
         val ageInt = currentState.age.toInt()
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
+            _uiState.update { it.copy(registerState = UiState.Loading) }
 
-            authRepository.postRegister(
-                RegisterRequestDto(
+            userRepository.postRegister(
+                RegisterRequestModel(
                     username = currentState.username, password = currentState.password,
                     name = currentState.name, email = currentState.email, age = ageInt
                 )
-            ).onSuccess { response ->
+            ).onSuccess { memberModel ->
                 userManager.saveUserData(
-                    id = response.id,
-                    username = response.username,
-                    name = response.name,
-                    email = response.email,
-                    age = response.age
+                    id = memberModel.id,
+                    username = memberModel.username,
+                    name = memberModel.name,
+                    email = memberModel.email,
+                    age = memberModel.age
                 )
 
                 _uiState.update { it.copy(
-                    isLoading = false,
-                    isSuccess = true,
-                    successMessage = response.username + "님, 회원가입 성공!",
-                    errorMessage = null
+                    registerState = UiState.Success(memberModel)
                 ) }
             }.onFailure { throwable ->
                 _uiState.update { it.copy(
-                    isLoading = false,
-                    isSuccess = false,
-                    errorMessage = throwable.message ?: "회원가입에 실패했습니다.",
-                    successMessage = null
+                    registerState = UiState.Failure(throwable.message ?: "회원가입에 실패했습니다.")
                 ) }
             }
         }
-    }
-
-    fun resetMessageState() {
-        _uiState.update { it.copy(errorMessage = null, successMessage = null) }
     }
 }
