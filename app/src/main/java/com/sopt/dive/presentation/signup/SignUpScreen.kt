@@ -34,10 +34,10 @@ import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.showToast
+import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
-import com.sopt.uniqlo.core.util.UiState
 
 @Composable
 fun SignUpRoute(
@@ -188,7 +188,7 @@ private fun SignUpScreen(
 
         SoptButton(
             label = "회원가입 하기",
-            onClick = { onSignUpClick() },
+            onClick = onSignUpClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 24.dp)

@@ -29,12 +29,11 @@ import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.showToast
+import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
 import com.sopt.dive.presentation.mypage.model.MyPageProfileUiModel
-import com.sopt.uniqlo.core.util.UiState
-
 
 @Composable
 fun MyPageRoute(
@@ -111,7 +110,7 @@ private fun MyPageScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.profile),
-                contentDescription = "$userName 프로필 이미지",
+                contentDescription = "${userName} 프로필 이미지",
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)

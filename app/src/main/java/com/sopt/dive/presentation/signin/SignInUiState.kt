@@ -1,8 +1,8 @@
 package com.sopt.dive.presentation.signin
 
 import androidx.compose.runtime.Immutable
+import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.model.LoginModel
-import com.sopt.uniqlo.core.util.UiState
 
 @Immutable
 data class SignInUiState(

@@ -2,11 +2,11 @@ package com.sopt.dive.presentation.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sopt.dive.core.util.UiState
 import com.sopt.dive.core.util.Validator
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.model.RegisterRequestModel
 import com.sopt.dive.data.repository.UserRepository
-import com.sopt.uniqlo.core.util.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

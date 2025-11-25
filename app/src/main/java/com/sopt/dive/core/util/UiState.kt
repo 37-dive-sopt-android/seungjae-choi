@@ -1,4 +1,4 @@
-package com.sopt.uniqlo.core.util
+package com.sopt.dive.core.util
 
 sealed interface UiState<out T> {
     data object Empty : UiState<Nothing>

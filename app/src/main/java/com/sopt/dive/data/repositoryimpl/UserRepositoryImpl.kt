@@ -1,12 +1,12 @@
 package com.sopt.dive.data.repositoryimpl
 
+import com.sopt.dive.core.util.suspendRunCatching
 import com.sopt.dive.data.datasource.UserDataSource
 import com.sopt.dive.data.model.RegisterRequestModel
 import com.sopt.dive.data.model.UserModel
 import com.sopt.dive.data.model.toDto
 import com.sopt.dive.data.model.toModel
 import com.sopt.dive.data.repository.UserRepository
-import com.sopt.uniqlo.core.util.suspendRunCatching
 
 class UserRepositoryImpl(
     private val userDataSource: UserDataSource

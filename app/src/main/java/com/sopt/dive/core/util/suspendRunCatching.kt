@@ -1,4 +1,4 @@
-package com.sopt.uniqlo.core.util
+package com.sopt.dive.core.util
 
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.ensureActive
