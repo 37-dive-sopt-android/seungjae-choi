@@ -1,12 +1,10 @@
 package com.sopt.dive.presentation.mypage
 
 import androidx.compose.runtime.Immutable
-import com.sopt.dive.data.dto.response.UserDetailResponseDto
+import com.sopt.dive.presentation.mypage.model.MyPageProfileUiModel
+import com.sopt.uniqlo.core.util.UiState
 
 @Immutable
 data class MyPageUiState(
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val successMessage: String? = null,
-    val profile: UserDetailResponseDto? = null
+    val profileState: UiState<MyPageProfileUiModel> = UiState.Loading
 )

@@ -1,6 +1,8 @@
 package com.sopt.dive.presentation.signup
 
 import androidx.compose.runtime.Immutable
+import com.sopt.dive.data.model.UserModel
+import com.sopt.uniqlo.core.util.UiState
 
 @Immutable
 data class SignUpUiState(
@@ -9,8 +11,5 @@ data class SignUpUiState(
     val name: String = "",
     val email: String = "",
     val age: String = "",
-    val isLoading: Boolean = false,
-    val isSuccess: Boolean = false,
-    val errorMessage: String? = null,
-    val successMessage: String? = null
+    val registerState: UiState<UserModel> = UiState.Loading
 )
