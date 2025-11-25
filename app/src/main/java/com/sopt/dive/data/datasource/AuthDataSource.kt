@@ -1,14 +1,11 @@
-package com.sopt.dive.data.service
+package com.sopt.dive.data.datasource
 
 import com.sopt.dive.data.dto.request.LogInRequestDto
 import com.sopt.dive.data.dto.response.BaseResponseDto
 import com.sopt.dive.data.dto.response.LoginResponseDto
-import retrofit2.http.Body
-import retrofit2.http.POST
 
-interface AuthService {
-    @POST("/api/v1/auth/login")
+interface AuthDataSource {
     suspend fun postLogin(
-        @Body loginRequestDto: LogInRequestDto
+        request: LogInRequestDto
     ): BaseResponseDto<LoginResponseDto>
 }

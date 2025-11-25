@@ -1,16 +1,14 @@
 package com.sopt.dive.data.repository
 
-import com.sopt.dive.data.dto.response.UserDetailResponseDto
-import com.sopt.dive.data.service.UserService
+import com.sopt.dive.data.model.RegisterRequestModel
+import com.sopt.dive.data.model.UserModel
 
-class UserRepository(private val userService: UserService) {
-    suspend fun getUser(userId: Long): Result<UserDetailResponseDto> = runCatching {
-        val response = userService.getUser(userId)
+interface UserRepository {
+    suspend fun postRegister(
+        request: RegisterRequestModel
+    ): Result<UserModel>
 
-        if (response.success) {
-            response.data ?: throw IllegalStateException()
-        } else {
-            throw RuntimeException(response.message)
-        }
-    }
+    suspend fun getUser(
+        id: Long
+    ): Result<UserModel>
 }

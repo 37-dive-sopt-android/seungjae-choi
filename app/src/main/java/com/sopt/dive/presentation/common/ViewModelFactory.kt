@@ -21,7 +21,7 @@ class ViewModelFactory(
                 SignInViewModel(authRepository, userManager) as T
             }
             modelClass.isAssignableFrom(SignUpViewModel::class.java) -> {
-                SignUpViewModel(authRepository, userManager) as T
+                SignUpViewModel(userManager, userRepository) as T
             }
             modelClass.isAssignableFrom(MyPageViewModel::class.java) -> {
                 MyPageViewModel(userManager, userRepository) as T
