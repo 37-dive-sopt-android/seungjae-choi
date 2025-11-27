@@ -1,6 +1,7 @@
 package com.sopt.dive.data.remote
 
 import com.sopt.dive.data.service.AuthService
+import com.sopt.dive.data.service.OpenApiService
 import com.sopt.dive.data.service.UserService
 
 object ServicePool {
@@ -9,5 +10,8 @@ object ServicePool {
     }
     val authService: AuthService by lazy {
         ApiFactory.create<AuthService>()
+    }
+    val openApiService: OpenApiService by lazy {
+        ApiFactory.create<OpenApiService>(isOpenApi = true)
     }
 }
