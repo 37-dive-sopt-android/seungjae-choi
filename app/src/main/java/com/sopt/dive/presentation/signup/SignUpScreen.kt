@@ -51,6 +51,7 @@ fun SignUpRoute(
             ViewModelFactory(
                 authRepository = RepositoryModule.authRepository,
                 userRepository = RepositoryModule.userRepository,
+                openApiRepository = RepositoryModule.openApiRepository,
                 userManager = userManager
             )
         }

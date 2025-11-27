@@ -49,6 +49,7 @@ fun MyPageRoute(
             ViewModelFactory(
                 authRepository = RepositoryModule.authRepository,
                 userRepository = RepositoryModule.userRepository,
+                openApiRepository = RepositoryModule.openApiRepository,
                 userManager = userManager
             )
         }
