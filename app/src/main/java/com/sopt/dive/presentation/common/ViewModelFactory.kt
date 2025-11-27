@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.AuthRepository
+import com.sopt.dive.data.repository.OpenApiRepository
 import com.sopt.dive.data.repository.UserRepository
+import com.sopt.dive.presentation.home.viewmodel.HomeViewModel
 import com.sopt.dive.presentation.mypage.MyPageViewModel
 import com.sopt.dive.presentation.signin.SignInViewModel
 import com.sopt.dive.presentation.signup.SignUpViewModel
@@ -12,6 +14,7 @@ import com.sopt.dive.presentation.signup.SignUpViewModel
 class ViewModelFactory(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
+    private val openApiRepository: OpenApiRepository,
     private val userManager: UserManager
 ) : ViewModelProvider.Factory {
 
@@ -25,6 +28,9 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(MyPageViewModel::class.java) -> {
                 MyPageViewModel(userManager, userRepository) as T
+            }
+            modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
+                HomeViewModel(openApiRepository) as T
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
