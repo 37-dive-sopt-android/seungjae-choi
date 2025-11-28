@@ -7,7 +7,11 @@ import com.sopt.dive.core.util.Validator
 import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.model.RegisterRequestModel
 import com.sopt.dive.data.repository.UserRepository
+import com.sopt.dive.presentation.signup.state.SignUpSideEffect
+import com.sopt.dive.presentation.signup.state.SignUpUiState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,6 +24,9 @@ class SignUpViewModel(
 
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
+
+    private val _sideEffect = MutableSharedFlow<SignUpSideEffect>()
+    val sideEffect: SharedFlow<SignUpSideEffect> = _sideEffect
 
     fun updateUsername(value: String) {
         _uiState.update { it.copy(username = value) }
@@ -75,10 +82,15 @@ class SignUpViewModel(
                 _uiState.update { it.copy(
                     registerState = UiState.Success(memberModel)
                 ) }
+
+                _sideEffect.emit(SignUpSideEffect.ShowToast("회원가입 성공!"))
             }.onFailure { throwable ->
+                val errorMessage = throwable.message ?: "회원가입에 실패했습니다."
                 _uiState.update { it.copy(
-                    registerState = UiState.Failure(throwable.message ?: "회원가입에 실패했습니다.")
+                    registerState = UiState.Failure(errorMessage)
                 ) }
+
+                _sideEffect.emit(SignUpSideEffect.ShowToast(errorMessage))
             }
         }
     }

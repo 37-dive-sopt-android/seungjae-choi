@@ -1,4 +1,4 @@
-package com.sopt.dive.presentation.signin
+package com.sopt.dive.presentation.signin.state
 
 import androidx.compose.runtime.Immutable
 import com.sopt.dive.core.util.UiState
@@ -10,3 +10,7 @@ data class SignInUiState(
     val password: String = "",
     val loginState: UiState<LoginModel> = UiState.Loading
 )
+
+sealed interface SignInSideEffect {
+    data class ShowToast(val msg: String) : SignInSideEffect
+}
