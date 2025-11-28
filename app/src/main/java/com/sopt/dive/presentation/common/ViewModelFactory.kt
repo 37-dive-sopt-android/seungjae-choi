@@ -6,7 +6,7 @@ import com.sopt.dive.data.local.UserManager
 import com.sopt.dive.data.repository.AuthRepository
 import com.sopt.dive.data.repository.OpenApiRepository
 import com.sopt.dive.data.repository.UserRepository
-import com.sopt.dive.presentation.home.viewmodel.HomeViewModel
+import com.sopt.dive.presentation.home.HomeViewModel
 import com.sopt.dive.presentation.mypage.MyPageViewModel
 import com.sopt.dive.presentation.signin.SignInViewModel
 import com.sopt.dive.presentation.signup.SignUpViewModel
