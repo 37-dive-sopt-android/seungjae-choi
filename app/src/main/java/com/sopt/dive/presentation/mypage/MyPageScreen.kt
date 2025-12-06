@@ -1,15 +1,19 @@
 package com.sopt.dive.presentation.mypage
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,18 +26,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
-import com.sopt.dive.core.extention.showToast
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.local.UserManager
-import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
 import com.sopt.dive.presentation.mypage.model.MyPageProfileUiModel
+import com.sopt.dive.presentation.mypage.state.MyPageSideEffect
 
 @Composable
 fun MyPageRoute(
@@ -41,30 +46,26 @@ fun MyPageRoute(
     navigateToSignIn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val userManager = remember { UserManager(context) }
 
     val viewModel: MyPageViewModel = viewModel(
         factory = remember {
-            ViewModelFactory(
-                authRepository = RepositoryModule.authRepository,
-                userRepository = RepositoryModule.userRepository,
-                userManager = userManager
-            )
+            ViewModelFactory(userManager = userManager)
         }
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.profileState) {
-        when (val state = uiState.profileState) {
-            is UiState.Success -> {
-                context.showToast("프로필을 불러왔습니다.")
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.flowWithLifecycle(lifecycleOwner.lifecycle)
+            .collect { sideEffect ->
+                when (sideEffect) {
+                    is MyPageSideEffect.ShowToast -> {
+                        Toast.makeText(context, sideEffect.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            is UiState.Failure -> {
-                context.showToast(state.msg)
-            }
-            else -> {}
-        }
     }
 
     when (val state = uiState.profileState) {
@@ -78,6 +79,16 @@ fun MyPageRoute(
                     navigateToSignIn()
                 },
             )
+        }
+        is UiState.Loading -> {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
         else -> {}
     }

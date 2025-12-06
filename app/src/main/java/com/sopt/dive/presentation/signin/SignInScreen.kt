@@ -1,5 +1,6 @@
 package com.sopt.dive.presentation.signin
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,48 +32,43 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extention.noRippleClickable
-import com.sopt.dive.core.extention.showToast
-import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.local.UserManager
-import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
+import com.sopt.dive.presentation.signin.state.SignInSideEffect
 
 @Composable
 fun SignInRoute(
     onSignUpClick: () -> Unit,
     onSignInSuccess: () -> Unit
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val userManager = remember { UserManager(context) }
 
     val viewModel : SignInViewModel = viewModel(
         factory = remember {
-            ViewModelFactory(
-                authRepository = RepositoryModule.authRepository,
-                userRepository = RepositoryModule.userRepository,
-                userManager = userManager
-            )
+            ViewModelFactory(userManager = userManager)
         }
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.loginState) {
-        when (val state = uiState.loginState) {
-            is UiState.Success -> {
-                context.showToast("로그인 성공!")
-                onSignInSuccess()
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.flowWithLifecycle(lifecycleOwner.lifecycle)
+            .collect { sideEffect ->
+                when (sideEffect) {
+                    is SignInSideEffect.ShowToast -> {
+                        Toast.makeText(context, sideEffect.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            is UiState.Failure -> {
-                context.showToast(state.msg)
-            }
-            else -> {}
-        }
     }
 
     SignInScreen(
