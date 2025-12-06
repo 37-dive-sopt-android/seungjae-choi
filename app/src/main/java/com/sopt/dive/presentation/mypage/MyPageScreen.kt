@@ -36,7 +36,6 @@ import com.sopt.dive.core.designsystem.component.SoptInfoField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.local.UserManager
-import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
 import com.sopt.dive.presentation.mypage.model.MyPageProfileUiModel
 import com.sopt.dive.presentation.mypage.state.MyPageSideEffect
@@ -53,12 +52,7 @@ fun MyPageRoute(
 
     val viewModel: MyPageViewModel = viewModel(
         factory = remember {
-            ViewModelFactory(
-                authRepository = RepositoryModule.authRepository,
-                userRepository = RepositoryModule.userRepository,
-                openApiRepository = RepositoryModule.openApiRepository,
-                userManager = userManager
-            )
+            ViewModelFactory(userManager = userManager)
         }
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

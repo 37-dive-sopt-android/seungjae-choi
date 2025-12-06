@@ -4,11 +4,12 @@ import androidx.compose.runtime.Immutable
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.presentation.home.model.FriendUiModel
 import com.sopt.dive.presentation.home.model.MyProfile
+import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 data class HomeUiState(
     val myProfile: MyProfile,
-    val friendListState: UiState<List<FriendUiModel>> = UiState.Loading
+    val friendListState: UiState<ImmutableList<FriendUiModel>> = UiState.Loading
 )
 
 sealed interface HomeSideEffect {

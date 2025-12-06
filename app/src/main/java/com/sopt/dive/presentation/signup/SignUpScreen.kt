@@ -37,7 +37,6 @@ import com.sopt.dive.core.designsystem.component.SoptButton
 import com.sopt.dive.core.designsystem.component.SoptFormField
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.data.local.UserManager
-import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
 import com.sopt.dive.presentation.signup.state.SignUpSideEffect
 
@@ -51,12 +50,7 @@ fun SignUpRoute(
 
     val viewModel : SignUpViewModel = viewModel(
         factory = remember {
-            ViewModelFactory(
-                authRepository = RepositoryModule.authRepository,
-                userRepository = RepositoryModule.userRepository,
-                openApiRepository = RepositoryModule.openApiRepository,
-                userManager = userManager
-            )
+            ViewModelFactory(userManager = userManager)
         }
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

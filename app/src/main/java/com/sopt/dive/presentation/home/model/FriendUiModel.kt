@@ -3,6 +3,8 @@ package com.sopt.dive.presentation.home.model
 import androidx.compose.runtime.Immutable
 import com.sopt.dive.data.model.FriendListModel
 import com.sopt.dive.data.model.FriendModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 sealed class FriendAction {
@@ -21,10 +23,10 @@ data class FriendUiModel(
     val action: FriendAction
 )
 
-fun FriendListModel.toFriendUiModelList(): List<FriendUiModel> =
+fun FriendListModel.toFriendUiModelList(): ImmutableList<FriendUiModel> =
     this.friendList.mapIndexed { index, model ->
         model.toFriendUiModel(index)
-    }
+    }.toImmutableList()
 
 fun FriendModel.toFriendUiModel(index: Int): FriendUiModel {
     val isBirthday = this.id % 3 == 0

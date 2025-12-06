@@ -27,7 +27,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.data.local.UserManager
-import com.sopt.dive.data.repository.RepositoryModule
 import com.sopt.dive.presentation.common.ViewModelFactory
 import com.sopt.dive.presentation.home.component.FriendListItem
 import com.sopt.dive.presentation.home.model.FriendAction
@@ -35,6 +34,8 @@ import com.sopt.dive.presentation.home.model.FriendUiModel
 import com.sopt.dive.presentation.home.model.MyProfile
 import com.sopt.dive.presentation.home.state.HomeSideEffect
 import com.sopt.dive.presentation.home.state.HomeUiState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun HomeRoute(
@@ -47,12 +48,7 @@ fun HomeRoute(
 
     val viewModel: HomeViewModel = viewModel(
         factory = remember {
-            ViewModelFactory(
-                authRepository = RepositoryModule.authRepository,
-                userRepository = RepositoryModule.userRepository,
-                openApiRepository = RepositoryModule.openApiRepository,
-                userManager = userManager
-            )
+            ViewModelFactory(userManager = userManager)
         }
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -95,7 +91,7 @@ fun HomeRoute(
 private fun HomeScreen(
     paddingValues: PaddingValues,
     myProfile: MyProfile,
-    friendList: List<FriendUiModel>,
+    friendList: ImmutableList<FriendUiModel>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -153,7 +149,7 @@ private fun HomeScreenPreview() {
                     isBirthday = true,
                     action = FriendAction.Gift
                 )
-            )
+            ).toImmutableList()
         )
     )
 
