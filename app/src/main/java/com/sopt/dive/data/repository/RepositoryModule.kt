@@ -1,16 +1,20 @@
 package com.sopt.dive.data.repository
 
 import com.sopt.dive.data.datasource.AuthDataSource
+import com.sopt.dive.data.datasource.OpenApiDataSource
 import com.sopt.dive.data.datasource.UserDataSource
-import com.sopt.dive.data.datasourceimpl.AuthDataSourceImpl
+import com.sopt.dive.data.datasourceimpl.FakeAuthDataSourceImpl
+import com.sopt.dive.data.datasourceimpl.OpenApiDataSourceImpl
 import com.sopt.dive.data.datasourceimpl.UserDataSourceImpl
 import com.sopt.dive.data.remote.ServicePool
 import com.sopt.dive.data.repositoryimpl.AuthRepositoryImpl
+import com.sopt.dive.data.repositoryimpl.OpenApiRepositoryImpl
 import com.sopt.dive.data.repositoryimpl.UserRepositoryImpl
 
 object RepositoryModule {
     private val authDataSource: AuthDataSource by lazy {
-        AuthDataSourceImpl(ServicePool.authService)
+//        AuthDataSourceImpl(ServicePool.authService)
+        FakeAuthDataSourceImpl()
     }
 
     val authRepository: AuthRepository by lazy {
@@ -23,6 +27,14 @@ object RepositoryModule {
 
     val userRepository: UserRepository by lazy {
         UserRepositoryImpl(userDataSource)
+    }
+
+    private val openApiDataSource: OpenApiDataSource by lazy {
+        OpenApiDataSourceImpl(ServicePool.openApiService)
+    }
+
+    val openApiRepository: OpenApiRepository by lazy {
+        OpenApiRepositoryImpl(openApiDataSource)
     }
 
 }

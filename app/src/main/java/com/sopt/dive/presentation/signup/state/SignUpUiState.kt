@@ -1,4 +1,4 @@
-package com.sopt.dive.presentation.signup
+package com.sopt.dive.presentation.signup.state
 
 import androidx.compose.runtime.Immutable
 import com.sopt.dive.core.util.UiState
@@ -13,3 +13,7 @@ data class SignUpUiState(
     val age: String = "",
     val registerState: UiState<UserModel> = UiState.Loading
 )
+
+sealed interface SignUpSideEffect {
+    data class ShowToast(val msg: String) : SignUpSideEffect
+}

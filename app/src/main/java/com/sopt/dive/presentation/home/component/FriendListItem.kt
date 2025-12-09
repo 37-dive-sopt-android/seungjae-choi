@@ -1,6 +1,6 @@
 package com.sopt.dive.presentation.home.component
 
-import androidx.compose.foundation.Image
+import android.R.attr.contentDescription
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,12 +23,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
-import com.sopt.dive.presentation.home.model.Friend
+import coil.compose.AsyncImage
 import com.sopt.dive.presentation.home.model.FriendAction
+import com.sopt.dive.presentation.home.model.FriendUiModel
 
 @Composable
 fun FriendListItem(
-    friend: Friend,
+    friend: FriendUiModel,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -37,8 +38,8 @@ fun FriendListItem(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = friend.profileImageRes),
+        AsyncImage(
+            model = friend.profileImageUrl,
             contentDescription = "${friend.name} 프로필 이미지",
             contentScale = ContentScale.Crop,
             modifier = Modifier

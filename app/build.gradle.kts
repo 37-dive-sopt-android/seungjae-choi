@@ -24,6 +24,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", properties["base.url"].toString())
+        buildConfigField("String", "OPEN_URL", properties["open.url"].toString())
     }
 
     buildTypes {
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.kotlinx.immutable)
     implementation(libs.okhttp.logging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
